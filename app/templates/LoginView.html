@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="app">
+        <v-app id="inspire">
+            <v-content>
+                <v-container class="fill-height" fluid>
+                    <v-row align="center" justify="center">
+                        <v-col cols="12" sm="8" md="4">
+                            <form ref='forms' method="post">
+                                {% csrf_token %}
+                                <input name="username" :value="username" type="hidden"></input>
+                                <input name="password" :value="password" type="hidden"></input>
+
+                                <v-card class="elevation-12" :disabled="loading" :loading="loading">
+                                    <v-list-item-content>
+                                        <v-col cols="auto">
+                                        </v-col>
+                                        <v-img class="white--text align-end"
+                                            src=""></v-img>
+                                        <center>
+                                            <v-list-item-title class="headline text-xs-center">Login Page
+                                            </v-list-item-title>
+                                        </center>
+                                    </v-list-item-content>
+                                    <v-card-text>
+                                        <v-divider></v-divider>
+                                        {% if error %}
+                                        <v-alert dense color="red">
+                                            {{error}}
+                                        </v-alert>
+                                        {%endif%}
+
+                                        <v-form v-model="valid">
+                                            <v-text-field name="username" v-model="username" :rules="usernameRules"
+                                                required prepend-icon="mdi-account-circle" label="Username">
+                                            </v-text-field>
+
+                                            <v-text-field name="password" v-model="password" required
+                                                :rules="passwordRules" prepend-icon="mdi-lock"
+                                                :append-icon="showpassword ? 'mdi-eye' :'mdi-eye-off'"
+                                                :type="showpassword ? 'text': 'password'"
+                                                @click:append="showpassword = !showpassword" v-on:keyup.enter="onEnter"
+                                                label="Password"></v-text-field>
+                                            <v-text-field v-show="false" type="hidden" name="capcha" v-model="robot"
+                                                required :rules="robotRules" prepend-icon="mdi-lock"
+                                                :append-icon="showpassword ? 'mdi-eye' :'mdi-eye-off'"
+                                                :type="showpassword ? 'text': 'password'"
+                                                @click:append="showpassword = !showpassword" v-on:keyup.enter="onEnter"
+                                                label="Password"></v-text-field>
+<!--                                            <div ref="recaptchaRoot">-->
+<!--                                                <center v-if="google_captcha">-->
+<!--                                                    <vue-recaptcha v-model="google_captcha" ref="recaptcha"-->
+<!--                                                        @verify="onVerify" @expired="onExpired"-->
+<!--                                                        sitekey="6LerUjQaAAAAANHTpgkE7K0i7Fqnq9YDXd2ZntA3">-->
+<!--                                                    </vue-recaptcha>-->
+<!--                                                </center>-->
+<!--                                                <re-captcha v-else @captchavalidation="validationCapchaParent">-->
+<!--                                                </re-captcha>-->
+
+<!--                                            </div>-->
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn :disabled="!valid" color="info" @click="loading=true" type="submit">Login
+                                        </v-btn>
+                                    </v-card-actions>
+                                    </v-form>
+
+                                </v-card>
+                            </form>
+
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-content>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaApiLoaded&render=explicit" async defer>
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
+
+    <script src="https://unpkg.com/vue-recaptcha@latest/dist/vue-recaptcha.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            components: {
+                'vue-recaptcha': VueRecaptcha
+            },
+            data: () => ({
+                google_captcha: true,
+                robot: true,
+                drawer: null,
+                showpassword: false,
+                loading: false,
+
+                // User Credentials
+                username: "",
+                password: "",
+
+                // validation
+                valid: false,
+                usernameRules: [
+                    v => !!v || 'Name is required',
+                ],
+                passwordRules: [
+                    v => !!v || 'Password is required',
+                ],
+                robotRules: [
+                    v => v == true || 'Password is required',
+                ],
+                // Backend validation
+                error: false,
+                error_msg: ""
+
+            }),
+            mounted() {
+                //this.mounted_method()
+                this.checking_google_service()
+
+            },
+            methods: {
+                validationCapchaParent(value) {
+                    console.log('value', value.detail[0])
+                    if (value.detail[0]) {
+                        this.robot = true
+                    }
+                    else {
+                        this.robot = false
+                    }
+
+                },
+                onVerify: function (response) {
+                    if (response) this.robot = true;
+                }, onExpired: function (response) {
+                    this.robot = false
+                },
+                mounted_method() {
+                    this.loading = true
+                },
+                logincall() {
+                    this.loading = true
+                    const {
+                        username,
+                        password
+                    } = this;
+
+                },
+                checking_google_service() {
+
+                    setTimeout(() => {
+                        if (this.$refs.recaptchaRoot) {
+                            if (this.$refs.recaptchaRoot.childNodes[0].childNodes[0].childNodes.length) {
+                                this.google_captcha = true
+                            }
+                            else {
+                                this.google_captcha = false
+                            }
+
+                        } else { console.log('') }
+                    }, 4000);
+
+                    // fetch("https://www.recaptcha.net", {
+                    //     "method": "GET",
+                    //     "headers": {
+                    //         'Access-Control-Allow-Origin': '*',
+                    //         'Access-Control-Allow-Methods': 'GET'
+                    //     },
+                    // })
+                    //     .then(response => {
+                    //         console.log('Service Call OK')
+                    //     })
+                    //     .catch(err => {
+                    //         console.log('Service Call Failed')
+                    //         console.log(err);
+                    //     })
+                },
+                onEnter() {
+                    if (this.valid) {
+                        this.loading = true
+                        this.$refs.forms.submit()
+                    }
+
+                }
+
+            }
+        })
+
+    </script>
+</body>
+
+</html>
