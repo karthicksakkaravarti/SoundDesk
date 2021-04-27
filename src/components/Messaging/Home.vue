@@ -2,250 +2,448 @@
   <div class="pa-1">
     <v-breadcrumbs :items="items"></v-breadcrumbs>
 
-    <b style="border-left: 5px solid #394a59" class="pl-3">Avialable VMD's</b>
-    <v-btn x-small outlined @click="routing('predefined')" class="ml-3">Set Predefined Messages</v-btn>
-    <div class="pa-2">
-      <v-row>
-        <v-col cols="12" sm="4" v-bind:key="i.id" v-for="i in GetVMDS">
-          <v-hover v-slot:default="{ hover }">
-            <v-card elevation="5" hover>
-              <v-card-title> {{ i.VMDName }} </v-card-title>
-              <v-card-subtitle>
-                Status : <a-tag color="green">{{ i.VMDStatus }}</a-tag>
-              </v-card-subtitle>
-              <v-divider></v-divider>
-              <v-card-text class="fixedheigh">
-                <v-expand-transition>
-                  <v-overlay :absolute="true" :value="hover">
-                    <v-row>
-                      <center>
-                        <v-col class="mr-15" cols="12" sm="6">
-                          <a-tooltip placement="top">
-                            <template slot="title">
-                              Single Line Message
-                            </template>
-                            <v-btn
-                              color="#394a59"
-                              @click="
-                                dialog = true;
-                                messageType = 'Single Line Message';
-                                selectedVmd = i;
-                              "
-                              small
-                              >Single Line Message</v-btn
-                            >
-                          </a-tooltip>
-                        </v-col>
-                        <v-col class="mr-15" cols="12" sm="6">
-                          <a-tooltip placement="top">
-                            <template slot="title">
-                              Multi Line Message
-                            </template>
-                            <v-btn
-                              color="#394a59"
-                              small
-                              @click="
-                                dialog = true;
-                                messageType = 'Multi Line Message';
-                                selectedVmd = i;
-                              "
-                              >Multi Line Message</v-btn
-                            >
-                          </a-tooltip>
-                        </v-col>
-                        <v-col class="mr-15" cols="12" sm="6">
-                          <a-tooltip placement="top">
-                            <template slot="title"> Image Message </template>
-                            <v-btn
-                              color="#394a59"
-                              small
-                              @click="
-                                dialog = true;
-                                messageType = 'Image Message';
-                                selectedVmd = i;
-                              "
-                              >Image Message</v-btn
-                            >
-                          </a-tooltip>
-                        </v-col>
-                        <v-col class="mr-15" cols="12" sm="6">
-                          <a-tooltip placement="top">
-                            <template slot="title"> Video Message </template>
-                            <v-btn
-                              color="#394a59"
-                              small
-                              @click="
-                                dialog = true;
-                                messageType = 'Video Message';
-                                selectedVmd = i;
-                              "
-                              >Video Message</v-btn
-                            >
-                          </a-tooltip>
-                        </v-col>
-                      </center>
-                    </v-row>
-                  </v-overlay>
-                </v-expand-transition>
-                <ul>
-                  <li>
-                    Location : <b>{{ i.VMDLocation }}</b>
-                  </li>
-                  <li>
-                    Latitude : <b>{{ i.VMDLatitude }}</b>
-                  </li>
-                  <li>
-                    Longitude : <b>{{ i.VMDLongitude }}</b>
-                  </li>
-                  <li>
-                    IPAddress : <b>{{ i.VMDIPAddress }}</b>
-                  </li>
-                  <li>
-                    Port : <b>{{ i.VMDPort }}</b>
-                  </li>
-                  <li>
-                    ResolutionHeight : <b>{{ i.VMDResolutionHeight }}</b>
-                  </li>
-                  <li>
-                    Resolutionwidth : <b>{{ i.VMDResolutionwidth }}</b>
-                  </li>
-                  <li>
-                    Brightness : <b>{{ i.VMDBrightness }}</b>
-                  </li>
-                </ul>
-              </v-card-text>
-              <v-card-actions> </v-card-actions>
-            </v-card>
-          </v-hover>
-        </v-col>
-      </v-row>
+    <v-card>
+      <!-- <v-card-title class="title font-weight-regular justify-space-between">
+      <span>{{ currentTitle }}</span>
+      <v-avatar
+        color="primary lighten-2"
+        class="subheading white--text"
+        size="24"
+        v-text="step"
+      ></v-avatar>
+    </v-card-title> -->
 
-      <!-- Dialog -->
-      <v-row justify="center">
-        <v-dialog v-model="dialog" scrollable max-width="900px">
-          <v-card>
-            <v-card-title
-              >{{ messageType }} to
-              <a-tag v-if="selectedVmd" class="ml-2"
-                >{{ selectedVmd.VMDName }}({{
-                  selectedVmd.VMDResolutionHeight
-                }}x{{ selectedVmd.VMDResolutionwidth }})</a-tag
-              ></v-card-title
-            >
-            <v-divider></v-divider>
-            <v-card-text style="height: 300px">
-              <RegionDimension
-                v-if="dialog"
-                ref="RegionDimension_ref"
-                :loaddata="false"
-              ></RegionDimension>
-              <h3 style="border-left: 5px solid #394a59" class="pl-3">
-                Message Details
-              </h3>
-              <v-form ref="messageForm" v-if="dialog">
-                <template v-if="messageType === 'Single Line Message'">
-                  <v-text-field
-                    :rules="[rules.required]"
-                    outlined
-                    label="Single Line Message"
-                  ></v-text-field>
-                </template>
-                <template v-else-if="messageType === 'Multi Line Message'">
-                  <v-textarea
-                    outlined
-                    :rules="[rules.required]"
-                    rows="2"
-                    label="Multi Line Message"
-                  ></v-textarea>
-                </template>
-                <template v-else-if="messageType === 'Image Message'">
-                  <v-file-input
-                    :rules="[rules.required]"
-                    label="Upload Image"
-                  ></v-file-input>
-                </template>
-                <template v-else-if="messageType === 'Video Message'">
-                  <v-file-input
-                    :rules="[rules.required]"
-                    label="Upload Video"
-                  ></v-file-input>
-                </template>
-              </v-form>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
+      <v-window v-model="step">
+        <v-window-item :value="1">
+          <v-card elevation="0" color="grey lighten-4" flat tile>
+            <v-toolbar outlined elevation="0" dense>
+              <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
+
+              <v-toolbar-title>Message Config</v-toolbar-title>
+
+              <v-btn-toggle dense class="ml-2" v-model="icon">
+                <a-tooltip placement="bottom">
+                  <template slot="title">
+                    <span>Single Line Message</span>
+                  </template>
+                  <v-btn value="Single">
+                    <v-icon>mdi-sort-variant</v-icon>
+                  </v-btn>
+                </a-tooltip>
+
+                <a-tooltip placement="bottom">
+                  <template slot="title">
+                    <span>Multi Line Message</span>
+                  </template>
+                  <v-btn value="Multi">
+                    <!-- <span class="hidden-sm-and-down">Multi</span> -->
+
+                    <v-icon>mdi-format-align-center</v-icon>
+                  </v-btn>
+                </a-tooltip>
+
+                <a-tooltip placement="bottom">
+                  <template slot="title">
+                    <span>Image Message</span>
+                  </template>
+                  <v-btn value="Image">
+                    <!-- <span class="hidden-sm-and-down">Image</span> -->
+
+                    <v-icon>mdi-file-image</v-icon>
+                  </v-btn>
+                </a-tooltip>
+
+                <a-tooltip placement="bottom">
+                  <template slot="title">
+                    <span>Video Message</span>
+                  </template>
+                  <v-btn value="Video">
+                    <!-- <span class="hidden-sm-and-down">Video</span> -->
+
+                    <v-icon>mdi-file-video</v-icon>
+                  </v-btn>
+                </a-tooltip>
+              </v-btn-toggle>
               <v-spacer></v-spacer>
-              <v-btn
-                color="blue darken-1"
-                text
-                @click="
-                  dialog = false;
-                  selectedVmd = null;
-                "
-                >Close</v-btn
-              >
-              <v-btn color="success" @click="SendMessage">Send</v-btn>
-            </v-card-actions>
+              <a-dropdown-button @click="sendData" type="primary">
+                Send <v-icon color="primary">mdi-send-circle</v-icon>
+                <a-menu slot="overlay">
+                  <a-menu-item key="1"> Save to playlist </a-menu-item>
+                </a-menu>
+              </a-dropdown-button>
+
+              <!-- <v-btn color="success" @click="sendData">
+          Send <v-icon>mdi-send-circle</v-icon>
+        </v-btn> -->
+            </v-toolbar>
           </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialog1" scrollable max-width="900px">
-          <v-card>
-            <v-card-title
-              >{{ messageType }}</v-card-title
-            >
-            <v-divider></v-divider>
-            <v-card-text style="height: 300px">
-              <RegionDimension
-                v-if="dialog1"
-                ref="RegionDimension_ref"
-              ></RegionDimension>
-              <h3 style="border-left: 5px solid #394a59" class="pl-3">
-                Message Details
-              </h3>
-                          </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="blue darken-1"
-                text
-                @click="
-                  dialog = false;
-                  selectedVmd = null;
-                "
-                >Close</v-btn
+
+          <v-row class="pt-1">
+            <v-col cols="12" sm="8">
+              <v-card outlined>
+                <v-card-text>
+                  <RegionDimension
+                    :loaddata="false"
+                    ref="RegionDimension_ref"
+                  />
+                  <h3 style="border-left: 5px solid #394a59" class="pl-3">
+                    Message Details
+                  </h3>
+                  <template v-if="icon == 'Single'">
+                    <Editor
+                      :single="true"
+                      :image-provider="imageProvider"
+                      disableimage="true"
+                      disablevideo="true"
+                      v-model="messageModal"
+                    />
+
+                    <!-- <v-text-field label="Single Line Message" v-model="messageModal"></v-text-field> -->
+                  </template>
+                  <template v-if="icon == 'Multi'">
+                    <Editor
+                      :image-provider="imageProvider"
+                      disableimage="true"
+                      disablevideo="true"
+                      v-model="messageModal"
+                    />
+                  </template>
+                  <template v-if="icon == 'Image'">
+                    <input ref="fileInput" type="file" @input="pickFile" />
+
+                    <!-- <v-file-input accept="image/*" v-model="imageModal" @change="pickFile" show-size label="File input"></v-file-input> -->
+                  </template>
+                  <template v-if="icon == 'Video'">
+                    <v-file-input
+                      accept="image/*"
+                      v-model="VideoModal"
+                      show-size
+                      label="Please Upload Video Files"
+                    ></v-file-input>
+                  </template>
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="4">
+              <v-card outlined>
+                <v-card-title
+                  >Message Preview
+                  <!-- <b v-if="$refs.RegionDimension_ref"
+              >$refs.RegionDimension_ref
+              {{ $refs.RegionDimension_ref.dataObj }}</b
+            > -->
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text v-if="$refs.RegionDimension_ref">
+                  <div
+                    v-if="icon == 'Image'"
+                    class="imagePreviewWrapper"
+                    :style="{ 'background-image': `url(${previewImage})` }"
+                    @click="selectImage"
+                  ></div>
+                  <div v-else-if="icon == 'Video'">
+                    <center>No Preview Avaialble for Video</center>
+                  </div>
+                  <center v-else>
+                    <iframe
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="messageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
+                    <br />
+                    <v-btn small color="primary" @click="overlay = !overlay">
+                      Preview
+                    </v-btn>
+
+                    <v-overlay :value="overlay">
+                      <v-row>
+                        <v-col>
+                          <iframe
+                            :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                            :srcdoc="messageModal"
+                            :height="$refs.RegionDimension_ref.dataObj.Height"
+                            :width="$refs.RegionDimension_ref.dataObj.Width"
+                            title="Iframe Example"
+                          >
+                          </iframe>
+                        </v-col>
+                      </v-row>
+                      <v-row
+                        ><v-col>
+                          <v-btn small color="primary" @click="overlay = false">
+                            Close
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-overlay>
+                  </center>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-window-item>
+
+        <v-window-item :value="2">
+          <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+            Message Preview
+          </h3>
+          <v-card-text v-if="$refs.RegionDimension_ref">
+            <div
+              v-if="icon == 'Image'"
+              class="imagePreviewWrapper"
+              :style="{ 'background-image': `url(${previewImage})` }"
+              @click="selectImage"
+            ></div>
+            <div v-else-if="icon == 'Video'">
+              <center>No Preview Avaialble for Video</center>
+            </div>
+            <center v-else>
+              <iframe
+                :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                :srcdoc="messageModal"
+                :height="$refs.RegionDimension_ref.dataObj.Height"
+                :width="$refs.RegionDimension_ref.dataObj.Width"
+                title="Iframe Example"
               >
-              <v-btn color="success" @click="SendMessage">Send</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-    </div>
+              </iframe>
+              <br />
+
+              <v-overlay :value="overlay">
+                <v-row>
+                  <v-col>
+                    <iframe
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="messageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
+                  </v-col>
+                </v-row>
+                <v-row
+                  ><v-col>
+                    <v-btn small color="primary" @click="overlay = false">
+                      Close
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-overlay>
+            </center>
+          </v-card-text>
+          <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+            VMD/VMD Group Selection
+          </h3>
+          <br />
+          <v-row class="pa-2">
+            <a-radio-group class="ml-3" v-model="VmDSelectionValue" >
+        <a-radio-button value="VMD">
+          VMD
+        </a-radio-button>
+        <a-radio-button value="VMDGroup">
+          VMD Group
+        </a-radio-button>
+
+      </a-radio-group>
+
+            <v-col cols="12" sm="6" v-if="VmDSelectionValue == 'VMD'">
+              <v-autocomplete
+            chips
+            multiple
+            deletable-chips
+            dense
+            label="VMD's*"
+            auto-select-first
+            item-text="VMDName"
+            item-value="id"
+            :items="GetVMDS"
+          ></v-autocomplete>
+            </v-col >
+            <v-col cols="12" sm="6" v-else>
+<v-autocomplete 
+            chips
+            multiple
+            deletable-chips
+            dense
+            label="VMD Group*"
+            auto-select-first
+            item-text="GroupName"
+            item-value="id"
+            :items="GetVMDGroups"
+          ></v-autocomplete>
+            </v-col>
+          </v-row>
+        </v-window-item>
+
+        <v-window-item :value="3">
+          <div class="pa-4 text-center">
+            <v-img
+              class="mb-4"
+              contain
+              height="128"
+              src="https://cdn.vuetifyjs.com/images/logos/v.svg"
+            ></v-img>
+            <h3 class="title font-weight-light mb-2">Welcome to Vuetify</h3>
+            <span class="caption grey--text">Thanks for signing up!</span>
+          </div>
+        </v-window-item>
+      </v-window>
+
+      <v-divider></v-divider>
+
+      <v-card-actions v-if="step != 1">
+        <v-btn text @click="step--"> Back </v-btn>
+        <v-spacer></v-spacer>
+        <!-- <v-btn
+        :disabled="step === 3"
+        color="primary"
+        depressed
+        @click="step++"
+      >
+        Next
+      </v-btn> -->
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 <script>
 import { VMDMixins } from "../../mixins/VMDMixins";
 import { utility } from "../../mixins/utility";
+import Editor from "@/index.js";
+// import Moveable from "vue-moveable";
+
 import RegionDimension from "./RegionDimension";
 
 export default {
   components: {
     RegionDimension,
+    Editor,
+    // Moveable,
   },
   mixins: [VMDMixins, utility],
   mounted() {
     this.get_VMDS();
+    this.get_VMDSGroups()
+    this.load = true;
+    this.messageModal = " ";
   },
   methods: {
+    sendData() {
+      this.$refs.RegionDimension_ref.validateFun().then((data) => {
+        console.log(this.messageModal.length);
+        if (data && this.messageModal.length >= 2) {
+          console.log("Validation Done");
+          this.step++;
+        } else {
+          console.log("Please fill all the fields");
+          this.$notification["warn"]({
+            message: "Please fill all required fields",
+            // description: "Predefined Message Updated",
+          });
+        }
+      });
+      // if(){
+      //   console.log("Validation Done")
+      // }else{
+      //   console.log('Please fill all the fields')
+      // }
+    },
+    selectImage() {
+      this.$refs.fileInput.click();
+    },
+    pickFile() {
+      let input = this.$refs.fileInput;
+      let file = input.files;
+      console.log("pickFile called");
+      if (file && file[0]) {
+        let reader = new FileReader();
+        reader.onload = (e) => {
+          this.previewImage = e.target.result;
+        };
+        reader.readAsDataURL(file[0]);
+        this.$emit("input", file[0]);
+      }
+    },
     SendMessage() {
       this.$refs.RegionDimension_ref.validateFun().then((data) => {
         console.log(data);
         this.$refs.messageForm.validate();
       });
     },
+    handleDrag({ target, left, top }) {
+      console.log("onDrag left, top", left, top);
+      target.style.left = `${left}px`;
+      target.style.top = `${top}px`;
+    },
+    handleResize({ target, width, height, delta }) {
+      console.log("onResize", width, height);
+      delta[0] && (target.style.width = `${width}px`);
+      delta[1] && (target.style.height = `${height}px`);
+    },
+    handleScale({ target, transform, scale }) {
+      console.log("onScale scale", scale);
+      target.style.transform = transform;
+    },
+    handleRotate({ target, dist, transform }) {
+      console.log("onRotate", dist);
+      target.style.transform = transform;
+    },
+    handleWarp({ target, transform }) {
+      console.log("onWarp", target);
+      target.style.transform = transform;
+    },
+  },
+  computed: {
+    currentTitle() {
+      switch (this.step) {
+        case 1:
+          return "Sign-up";
+        case 2:
+          return "Create a password";
+        default:
+          return "Account created";
+      }
+    },
   },
   data() {
     return {
+      VmDSelectionValue: 'VMD',
+      step: 1,
+      overlay: false,
+      previewImage: "",
+      icon: "Single",
+      imageModal: "",
+      VideoModal: "",
+      moveable: {
+        draggable: true,
+        throttleDrag: 1,
+        resizable: true,
+        throttleResize: 1,
+        keepRatio: true,
+        scalable: true,
+        throttleScale: 0,
+        rotatable: true,
+        throttleRotate: 0,
+      },
+      imageProvider: {
+        name: "Custom", // provider name
+        token:
+          "-qWchT63mkZEJch0ygm3bN9h3peInHqCcSAEMtvV:9YAz4dCiB3EAdYuoDVO0YvObtqY=:eyJzY29wZSI6InRlc3QiLCJkZWFkbGluZSI6MTkwMjAyODY1NX0=", // upload token
+        domain: "cdn-testing.zanquan.net", // upload domain
+        modifier: ({ width, height, url }) => {
+          console.log(height);
+          if (width < 750) {
+            return url;
+          } else {
+            return `${url}?imageMogr2/thumbnail/750x/`;
+          }
+        },
+      },
+      messageModal: "",
+      load: false,
       items: [
         {
           text: "Dashboard",
@@ -281,3 +479,15 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.imagePreviewWrapper {
+  width: 250px;
+  height: 250px;
+  display: block;
+  cursor: pointer;
+  margin: 0 auto 30px;
+  background-size: cover;
+  background-position: center center;
+}
+</style>

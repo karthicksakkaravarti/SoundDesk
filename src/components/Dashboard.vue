@@ -1,24 +1,31 @@
 <template>
-  <section class="pa-2">
-    <v-breadcrumbs :items="items"></v-breadcrumbs>
-  </section>
+ <section class="pa-2">
+                 <v-breadcrumbs :items="items"></v-breadcrumbs>
+
+       
+
+      </section>
 </template>
 
 <script>
+
 export default {
-  data() {
-    return {
+
+  data(){
+    return{
       items: [
+
         {
-          text: "Home",
+          text: 'Home',
           disabled: true,
         },
         {
-          text: "Dashboard",
+          text: 'Dashboard',
           disabled: true,
         },
       ],
-    };
-  },
-};
+    }
+  }
+
+}
 </script>

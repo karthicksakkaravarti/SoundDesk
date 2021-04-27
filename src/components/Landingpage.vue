@@ -120,7 +120,7 @@
         </v-btn> -->
         <v-avatar size=35 color="grey"    v-bind="attrs"
           v-on="on">
-            <span  >{{GetCurrentUser.username ? GetCurrentUser.username.charAt(0).toUpperCase(): 'anonymous'}}{{GetCurrentUser.username ? GetCurrentUser.username.charAt(1).toUpperCase(): "User"}}</span>
+            <span v-if="GetCurrentUser && GetCurrentUser.username" >{{GetCurrentUser.username ? GetCurrentUser.username.charAt(0).toUpperCase(): 'anonymous'}}{{GetCurrentUser.username ? GetCurrentUser.username.charAt(1).toUpperCase(): "User"}}</span>
         </v-avatar>
       </template>
 
@@ -129,12 +129,12 @@
           <v-list-item>
             <v-list-item-avatar>
                  <v-avatar size=35 color="grey" >
-                        <span  >{{GetCurrentUser.username ? GetCurrentUser.username.charAt(0).toUpperCase(): 'anonymous'}}{{GetCurrentUser.username ? GetCurrentUser.username.charAt(1).toUpperCase(): "User"}}</span>
+                        <span  v-if="GetCurrentUser && GetCurrentUser.username" >{{GetCurrentUser.username ? GetCurrentUser.username.charAt(0).toUpperCase(): 'anonymous'}}{{GetCurrentUser.username ? GetCurrentUser.username.charAt(1).toUpperCase(): "User"}}</span>
                     </v-avatar>
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title>{{GetCurrentUser.username.toUpperCase()}}</v-list-item-title>
+              <v-list-item-title v-if="GetCurrentUser && GetCurrentUser.username" >{{GetCurrentUser.username.toUpperCase()}}</v-list-item-title>
               <v-list-item-subtitle v-if="GetCurrentUser">{{GetCurrentUser.email}}</v-list-item-subtitle>
             </v-list-item-content>
 
@@ -202,6 +202,7 @@ export default {
     items: [
       { icon: 'mdi-view-dashboard', text: 'Dashboard' , to: "dashboard"},
       { icon: 'mdi-message', text: 'Messaging' , to: "SendMessage"},
+      { icon: 'mdi-message', text: 'PlayList' , to: "playlist"},
       { icon: 'mdi-file-chart', text: 'Reports' , to: "reports"},
       { icon: 'mdi-desktop-tower', text: 'VMDS' , to: "VmdManagement"},
       { icon: 'mdi-account-group-outline', text: 'User Management', to: "Usermanagement" },

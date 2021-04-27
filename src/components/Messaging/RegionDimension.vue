@@ -1,6 +1,6 @@
 <template>
   <div class="pt-2">
-    <div v-if="this.GetCurrentUser.id" v-once>{{ LoadData() }}</div>
+    <div v-if="GetCurrentUser" v-once>{{ LoadData() }}</div>
     <h3 style="border-left: 5px solid #394a59" class="pl-3"
       >Region Dimension and Co-Ordinates</h3
     >
@@ -167,7 +167,11 @@ export default {
       },
     };
   },
-  mounted() {},
+  mounted() {
+    this.dataObj.BorderLine = '#6F5D6F'
+    this.dataObj.BackGroundColor = '#FFFFFF'
+
+  },
   computed: {
     color: {
       get() {
@@ -247,6 +251,7 @@ export default {
               });
           }
          }
+         else{resolve(true);}
 
           console.log(reject);
         } else {

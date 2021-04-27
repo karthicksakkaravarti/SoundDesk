@@ -96,6 +96,7 @@ class Custom extends ImageHandler {
   }
   makeForm(file, key) {
     console.log(key)
+    console.log('file', file)
     const data = new FormData()
     data.append('name', file.name)
     data.append('key', 'media/'+file.name)

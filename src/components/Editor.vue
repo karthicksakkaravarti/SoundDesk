@@ -62,7 +62,7 @@
             </svg>
           </button>
           <div v-if="colorPickerVisible" class="color-picker">
-            <div style="display:flex;">
+            <div style="display: flex">
               <div
                 tabindex="0"
                 :class="{
@@ -89,12 +89,19 @@
                 <button
                   type="button"
                   class="hover:border border-gray cursor-pointer"
-                  style="border-radius:0px; width:24px;height:24px;border:0; margin-left:2px;margin-right:2px;"
+                  style="
+                    border-radius: 0px;
+                    width: 24px;
+                    height: 24px;
+                    border: 0;
+                    margin-left: 2px;
+                    margin-right: 2px;
+                  "
                   :style="{ 'background-color': color }"
                   @click="selectColor(commands, color)"
                 ></button>
               </div>
-              <div class="flex items-center" style="margin-top:20px;">
+              <div class="flex items-center" style="margin-top: 20px">
                 <form
                   class="flex"
                   :style="{ 'align-items': 'flex-start' }"
@@ -119,7 +126,7 @@
           </div>
         </div>
         <button
-         v-if="!disableimage"
+          v-if="!disableimage"
           v-tooltip.bottom="'Upload pictures (support drag and paste)'"
           aria-label="image"
           type="button"
@@ -136,12 +143,12 @@
         <input
           ref="uploadInput"
           type="file"
-          style="display:none"
+          style="display: none"
           @change="fileSelect($event, commands.image)"
         />
         <div ref="videoPicker" class="relative inline-block button-container">
           <button
-                   v-if="!disablevideo"
+            v-if="!disablevideo"
             v-tooltip.bottom="'Video link'"
             aria-label="video"
             type="button"
@@ -164,7 +171,7 @@
               <input
                 ref="videoInput"
                 class="video-input"
-                style="margin-right:12px;"
+                style="margin-right: 12px"
                 id="vue-editor-video-input"
                 v-model="videoAddress"
               />
@@ -173,8 +180,9 @@
           </div>
         </div>
         <button
-          v-tooltip.bottom="'save'"
-          aria-label="save"
+          v-if="!single"
+          v-tooltip.bottom="'Un Ordered list'"
+          aria-label="Un Ordered list"
           type="button"
           class="menubar__button"
           :class="{ 'is-active': isActive.bullet_list() }"
@@ -189,6 +197,7 @@
         </button>
 
         <button
+          v-if="!single"
           v-tooltip.bottom="'Ordered list'"
           aria-label="Ordered list"
           type="button"
@@ -204,6 +213,7 @@
           </svg>
         </button>
         <button
+          v-if="!single"
           v-tooltip.bottom="'Insert dividing line'"
           aria-label="Dividing line"
           type="button"
@@ -269,6 +279,7 @@
           </svg>
         </button>
         <button
+          v-if="!single"
           v-tooltip.bottom="'Quote block'"
           aria-label="Quote fast"
           type="button"
@@ -318,14 +329,14 @@
         <div
           ref="fontSiziePicker"
           class="font-size-picker-container"
-          style="width:44px"
+          style="width: 44px"
         >
           <button
             v-tooltip.bottom="'Font size'"
             aria-label="Font size"
             type="button"
             class="menubar__button menubar__title"
-            style="position:relative; width:44px;"
+            style="position: relative; width: 44px"
             :class="{
               'is-active': isFontSizeActive(getMarkAttrs),
             }"
@@ -349,6 +360,7 @@
         </div>
 
         <button
+          v-if="!single"
           v-tooltip.bottom="'On the left'"
           aria-label="On the left"
           type="button"
@@ -370,6 +382,7 @@
           </svg>
         </button>
         <button
+          v-if="!single"
           v-tooltip.bottom="'Centered'"
           aria-label="Centered"
           type="button"
@@ -391,6 +404,7 @@
           </svg>
         </button>
         <button
+          v-if="!single"
           v-tooltip.bottom="'Right'"
           aria-label="Right"
           type="button"
@@ -412,6 +426,7 @@
           </svg>
         </button>
         <button
+          v-if="!single"
           v-tooltip.bottom="'Both ends'"
           aria-label="Both ends"
           type="button"
@@ -475,22 +490,26 @@
         </button>
       </div>
     </editor-menu-bar>
+    <!-- <template v-if="single">
+      <v-text-field :editor="editor" class="editor__content" :value="value"  label="Single Line Message"></v-text-field>
+    </template> -->
     <editor-content
-      :style="{ height }"
-      class="editor__content"
+      style="min-height: 100px"
+      :class=" single ? '': 'editor__content' "
       :editor="editor"
     />
   </div>
 </template>
 
 <script>
-import { nodeIsActive } from '../utils'
-import { VTooltip } from 'v-tooltip'
+import { nodeIsActive } from "../utils";
+import { VTooltip } from "v-tooltip";
 
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-import FontSize from './FontSize'
-import Color from './Color'
-import ColorFill from './ColorFill'
+// import { Editor, EditorMenuBar } from 'tiptap'
+import { Editor, EditorContent, EditorMenuBar } from "tiptap";
+import FontSize from "./FontSize";
+import Color from "./Color";
+import ColorFill from "./ColorFill";
 
 import {
   CodeBlock,
@@ -507,17 +526,18 @@ import {
   Strike,
   Underline,
   History,
-} from 'tiptap-extensions'
-import Image from './Image'
-import Heading from './Heading'
-import Paragraph from './Paragraph'
-import Blockquote from './Blockquote'
-import Video from './Video'
-import ListItem from './ListItem'
-import { isActive as isTextAlignActive, setTextAlign } from '../TextAlign'
+} from "tiptap-extensions";
+import Image from "./Image";
+import Heading from "./Heading";
+import Paragraph from "./Paragraph";
+import RestricNewLine from "./RestricNewLine";
+import Blockquote from "./Blockquote";
+import Video from "./Video";
+import ListItem from "./ListItem";
+import { isActive as isTextAlignActive, setTextAlign } from "../TextAlign";
 
 export default {
-  name: 'RICHEDITOR',
+  name: "RICHEDITOR",
   components: {
     EditorMenuBar,
     EditorContent,
@@ -526,149 +546,152 @@ export default {
     height: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     value: {
       type: String,
-      default: '',
+      default: "",
     },
     width: {
       required: false,
-      default: '810px',
+      default: "810px",
       type: String,
     },
     imageProvider: {
-      required: true,
+      required: false,
       type: [Object, Function],
     },
-    disableimage:{
+    disableimage: {
       required: false,
     },
-    disablevideo:{
+    disablevideo: {
       required: false,
-    }
+    },
+    single: {
+      required: false,
+    },
   },
   data() {
     return {
-      colorError: '',
-      userColor: '',
+      colorError: "",
+      userColor: "",
       colorFill: false,
       fontSizePickerVisible: false,
       colorPickerVisible: false,
       currentFontSize: 16,
       videoPickerVisible: false,
-      videoAddress: '',
+      videoAddress: "",
       linkMenuIsActive: false,
       linkUrl: null,
       editor: null,
-    }
+    };
   },
   computed: {
     headingLevels() {
-      return [1, 2, 3]
+      return [1, 2, 3];
     },
     fontsizes() {
-      const fontsizes = [12, 14, 16, 18, 20, 24]
-      return fontsizes
+      const fontsizes = [12, 14, 16, 18, 20, 24];
+      return fontsizes;
     },
     colors() {
       const colors = [
-        'rgb(0, 0, 0)',
-        'rgb(38, 38, 38)',
-        'rgb(89, 89, 89)',
-        'rgb(140, 140, 140)',
-        'rgb(191, 191, 191)',
-        'rgb(217, 217, 217)',
-        'rgb(233, 233, 233)',
-        'rgb(245, 245, 245)',
-        'rgb(250, 250, 250)',
-        'rgb(255, 255, 255)',
-        'rgb(245, 34, 45)',
-        'rgb(250, 84, 28)',
-        'rgb(250, 140, 22)',
-        'rgb(250, 219, 20)',
-        'rgb(82, 196, 26)',
-        'rgb(19, 194, 194)',
-        'rgb(24, 144, 255)',
-        'rgb(47, 84, 235)',
-        'rgb(114, 46, 209)',
-        'rgb(235, 47, 150)',
-        'rgb(255, 232, 230)',
-        'rgb(255, 236, 224)',
-        'rgb(255, 239, 209)',
-        'rgb(255, 248, 189)',
-        'rgb(228, 247, 210)',
-        'rgb(211, 245, 240)',
-        'rgb(212, 238, 252)',
-        'rgb(222, 232, 252)',
-        'rgb(239, 225, 250)',
-        'rgb(250, 225, 235)',
-        'rgb(255, 163, 158)',
-        'rgb(255, 187, 150)',
-        'rgb(255, 213, 145)',
-        'rgb(255, 240, 143)',
-        'rgb(183, 235, 143)',
-        'rgb(135, 232, 222)',
-        'rgb(145, 213, 255)',
-        'rgb(173, 198, 255)',
-        'rgb(211, 173, 247)',
-        'rgb(255, 173, 210)',
-        'rgb(255, 77, 79)',
-        'rgb(255, 122, 69)',
-        'rgb(255, 169, 64)',
-        'rgb(255, 236, 61)',
-        'rgb(115, 209, 61)',
-        'rgb(54, 207, 201)',
-        'rgb(64, 169, 255)',
-        'rgb(89, 126, 247)',
-        'rgb(146, 84, 222)',
-        'rgb(247, 89, 171)',
-        'rgb(207, 19, 34)',
-        'rgb(212, 56, 13)',
-        'rgb(212, 107, 8)',
-        'rgb(212, 177, 6)',
-        'rgb(56, 158, 13)',
-        'rgb(8, 151, 156)',
-        'rgb(9, 109, 217)',
-        'rgb(29, 57, 196)',
-        'rgb(83, 29, 171)',
-        'rgb(196, 29, 127)',
-        'rgb(130, 0, 20)',
-        'rgb(135, 20, 0)',
-        'rgb(135, 56, 0)',
-        'rgb(97, 71, 0)',
-        'rgb(19, 82, 0)',
-        'rgb(0, 71, 79)',
-        'rgb(0, 58, 140)',
-        'rgb(6, 17, 120)',
-        'rgb(34, 7, 94)',
-        'rgb(120, 6, 80)',
-      ]
-      return colors
+        "rgb(0, 0, 0)",
+        "rgb(38, 38, 38)",
+        "rgb(89, 89, 89)",
+        "rgb(140, 140, 140)",
+        "rgb(191, 191, 191)",
+        "rgb(217, 217, 217)",
+        "rgb(233, 233, 233)",
+        "rgb(245, 245, 245)",
+        "rgb(250, 250, 250)",
+        "rgb(255, 255, 255)",
+        "rgb(245, 34, 45)",
+        "rgb(250, 84, 28)",
+        "rgb(250, 140, 22)",
+        "rgb(250, 219, 20)",
+        "rgb(82, 196, 26)",
+        "rgb(19, 194, 194)",
+        "rgb(24, 144, 255)",
+        "rgb(47, 84, 235)",
+        "rgb(114, 46, 209)",
+        "rgb(235, 47, 150)",
+        "rgb(255, 232, 230)",
+        "rgb(255, 236, 224)",
+        "rgb(255, 239, 209)",
+        "rgb(255, 248, 189)",
+        "rgb(228, 247, 210)",
+        "rgb(211, 245, 240)",
+        "rgb(212, 238, 252)",
+        "rgb(222, 232, 252)",
+        "rgb(239, 225, 250)",
+        "rgb(250, 225, 235)",
+        "rgb(255, 163, 158)",
+        "rgb(255, 187, 150)",
+        "rgb(255, 213, 145)",
+        "rgb(255, 240, 143)",
+        "rgb(183, 235, 143)",
+        "rgb(135, 232, 222)",
+        "rgb(145, 213, 255)",
+        "rgb(173, 198, 255)",
+        "rgb(211, 173, 247)",
+        "rgb(255, 173, 210)",
+        "rgb(255, 77, 79)",
+        "rgb(255, 122, 69)",
+        "rgb(255, 169, 64)",
+        "rgb(255, 236, 61)",
+        "rgb(115, 209, 61)",
+        "rgb(54, 207, 201)",
+        "rgb(64, 169, 255)",
+        "rgb(89, 126, 247)",
+        "rgb(146, 84, 222)",
+        "rgb(247, 89, 171)",
+        "rgb(207, 19, 34)",
+        "rgb(212, 56, 13)",
+        "rgb(212, 107, 8)",
+        "rgb(212, 177, 6)",
+        "rgb(56, 158, 13)",
+        "rgb(8, 151, 156)",
+        "rgb(9, 109, 217)",
+        "rgb(29, 57, 196)",
+        "rgb(83, 29, 171)",
+        "rgb(196, 29, 127)",
+        "rgb(130, 0, 20)",
+        "rgb(135, 20, 0)",
+        "rgb(135, 56, 0)",
+        "rgb(97, 71, 0)",
+        "rgb(19, 82, 0)",
+        "rgb(0, 71, 79)",
+        "rgb(0, 58, 140)",
+        "rgb(6, 17, 120)",
+        "rgb(34, 7, 94)",
+        "rgb(120, 6, 80)",
+      ];
+      return colors;
     },
 
     imageUploader() {
       const imageUploader = new Image({
         provider: this.imageProvider,
-      })
-      return imageUploader
+      });
+      return imageUploader;
     },
     state() {
-      return this.editor.state
+      return this.editor.state;
     },
     activeHeadingLevel() {
-      return this.headingLevels.find(level => {
-        return this.isHeadingActive({ level })
-      })
+      return this.headingLevels.find((level) => {
+        return this.isHeadingActive({ level });
+      });
     },
   },
   watch: {
     userColor() {
-      this.colorError = ''
+      this.colorError = "";
     },
     value(newVal, oldVal) {
       if (!oldVal && newVal) {
-        this.editor.setContent(newVal)
+        this.editor.setContent(newVal);
       }
     },
   },
@@ -677,182 +700,220 @@ export default {
   },
 
   mounted() {
-    this.editor = new Editor({
-      extensions: [
-        new Paragraph(),
-        new FontSize({ sizes: this.fontsizes }),
-        this.imageUploader,
-        new Blockquote(),
-        new Video(),
-        new CodeBlock(),
-        new Color(),
-        new ColorFill(),
-        new HorizontalRule(),
-        new HardBreak(),
-        new Heading({ levels: this.headingLevels }),
-        new BulletList(),
-        new OrderedList(),
-        new ListItem(),
-        new TodoItem(),
-        new TodoList(),
-        new Bold(),
-        new Code(),
-        new Italic(),
-        new Link(),
-        new Strike(),
-        new Underline(),
-        new History(),
-      ],
-      content: this.value,
-      onUpdate: ({ getHTML }) => {
-        this.$emit('input', getHTML().replace(/<p><\/p>/g, '<p><br></p>'))
-      },
-    })
-    window.editor = this.editor
-    const pickers = [
-      ['fontSiziePicker', 'fontSizePickerVisible'],
-      ['colorPicker', 'colorPickerVisible'],
-      ['videoPicker', 'videoPickerVisible'],
-    ]
+    if (this.single) {
+      this.editor = new Editor({
+        extensions: [
+          new Paragraph(),
+          new FontSize({ sizes: this.fontsizes }),
+          this.imageUploader,
+          new Blockquote(),
+          new Video(),
+          new CodeBlock(),
+          new Color(),
+          new ColorFill(),
+          new HorizontalRule(),
+          new RestricNewLine(),
+          new HardBreak(),
+          new Heading({ levels: this.headingLevels }),
+          new BulletList(),
+          new OrderedList(),
+          new ListItem(),
+          new TodoItem(),
+          new TodoList(),
+          new Bold(),
+          new Code(),
+          new Italic(),
+          new Link(),
+          new Strike(),
+          new Underline(),
+          new History(),
+        ],
+        content: this.value,
+        onUpdate: ({ getHTML }) => {
+          this.$emit("input", getHTML().replace(/<p><\/p>/g, ''));
+        },
+      });
+    } else {
+      this.editor = new Editor({
+        extensions: [
+          new Paragraph(),
+          new FontSize({ sizes: this.fontsizes }),
+          this.imageUploader,
+          new Blockquote(),
+          new Video(),
+          new CodeBlock(),
+          new Color(),
+          new ColorFill(),
+          new HorizontalRule(),
+          new HardBreak(),
+          new Heading({ levels: this.headingLevels }),
+          new BulletList(),
+          new OrderedList(),
+          new ListItem(),
+          new TodoItem(),
+          new TodoList(),
+          new Bold(),
+          new Code(),
+          new Italic(),
+          new Link(),
+          new Strike(),
+          new Underline(),
+          new History(),
+        ],
+        content: this.value,
+        onUpdate: ({ getHTML }) => {
+          this.$emit("input", getHTML().replace(/<p><\/p>/g, "<p><br></p>"));
+        },
+      });
+    }
 
-    this.closePicker = event => {
+    window.editor = this.editor;
+    const pickers = [
+      ["fontSiziePicker", "fontSizePickerVisible"],
+      ["colorPicker", "colorPickerVisible"],
+      ["videoPicker", "videoPickerVisible"],
+    ];
+
+    this.closePicker = (event) => {
       pickers.forEach(([ref, visible]) => {
         if (!this.$refs[ref].contains(event.target)) {
-          this[visible] = false
+          this[visible] = false;
         }
-      })
-    }
+      });
+    };
 
-    document.addEventListener('click', this.closePicker)
-    this.closeOnEsc = e => {
-      if (e.key == 'Escape' || e.key == 'Esc') {
+    document.addEventListener("click", this.closePicker);
+    this.closeOnEsc = (e) => {
+      if (e.key == "Escape" || e.key == "Esc") {
         // eslint-disable-next-line
         pickers.forEach(([_, visible]) => {
-          this[visible] = false
-        })
+          this[visible] = false;
+        });
       }
-    }
-    document.addEventListener('keyup', this.closeOnEsc)
+    };
+    document.addEventListener("keyup", this.closeOnEsc);
   },
   beforeDestroy() {
-    document.removeEventListener('click', this.closePicker)
-    document.removeEventListener('keyup', this.closeOnEsc)
+    document.removeEventListener("click", this.closePicker);
+    document.removeEventListener("keyup", this.closeOnEsc);
 
     if (this.editor) {
-      this.editor.destroy()
+      this.editor.destroy();
     }
   },
 
   methods: {
     showColorPicker() {
-      this.colorPickerVisible = true
+      this.colorPickerVisible = true;
       this.$nextTick(() => {
-        this.$refs.colorPickerInput.focus()
-      })
+        this.$refs.colorPickerInput.focus();
+      });
     },
     showVideoPicker() {
-      this.videoPickerVisible = true
+      this.videoPickerVisible = true;
       this.$nextTick(() => {
-        this.$refs.videoInput.focus()
-      })
+        this.$refs.videoInput.focus();
+      });
     },
     addVideo(command) {
-      command({ src: this.videoAddress })
-      this.videoAddress = ''
-      this.videoPickerVisible = false
+      command({ src: this.videoAddress });
+      this.videoAddress = "";
+      this.videoPickerVisible = false;
     },
     isHeadingActive({ level }) {
       return nodeIsActive(this.state, this.editor.schema.nodes.heading, {
         level,
-      })
+      });
     },
 
     isActiveAlign(align) {
-      return isTextAlignActive(this.state, align)
+      return isTextAlignActive(this.state, align);
     },
 
     align(alignment) {
-      window.editor = this.editor
-      const tr = setTextAlign(this.state.tr, this.editor.schema, alignment)
-      this.editor.view.dispatch(tr)
+      window.editor = this.editor;
+      const tr = setTextAlign(this.state.tr, this.editor.schema, alignment);
+      this.editor.view.dispatch(tr);
     },
 
     findStoredFontSize() {
       const storedMark = (this.state.storedMarks || []).find(
-        mark => mark.attrs.size
-      )
+        (mark) => mark.attrs.size
+      );
       if (storedMark) {
-        return storedMark.attrs.size
+        return storedMark.attrs.size;
       }
       const prevNode =
-        this.state.selection.$cursor && this.state.selection.$cursor.nodeBefore
+        this.state.selection.$cursor && this.state.selection.$cursor.nodeBefore;
       if (prevNode) {
-        const prevMark = prevNode.marks.find(mark => mark.attrs.size)
+        const prevMark = prevNode.marks.find((mark) => mark.attrs.size);
         if (prevMark) {
-          return prevMark.attrs.size
+          return prevMark.attrs.size;
         }
       }
     },
 
     activeFontSize(getMarkAttrs) {
-      const size = this.findStoredFontSize()
+      const size = this.findStoredFontSize();
       const selectSize = this.fontsizes.find(
-        size => getMarkAttrs('fontsize').size == size
-      )
+        (size) => getMarkAttrs("fontsize").size == size
+      );
       if (selectSize) {
-        return selectSize
+        return selectSize;
       }
-      return size || 16
+      return size || 16;
     },
 
     isFontSizeActive(getMarkAttrs) {
-      const size = this.findStoredFontSize()
+      const size = this.findStoredFontSize();
       // 默认大小就不要active了
       if (size == 16) {
-        return false
+        return false;
       }
-      if (this.fontsizes.some(size => getMarkAttrs('fontsize').size == size)) {
-        return true
+      if (
+        this.fontsizes.some((size) => getMarkAttrs("fontsize").size == size)
+      ) {
+        return true;
       }
-      return !!size
+      return !!size;
     },
     selectFontSize(command, size) {
-      command({ size })
-      this.fontSizePickerVisible = false
+      command({ size });
+      this.fontSizePickerVisible = false;
     },
 
     selectColor(commands, color, validate) {
       if (validate) {
-        const pattern = /^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{3}$/
+        const pattern = /^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{3}$/;
         if (!pattern.test(color)) {
-          this.colorError = '无效的色值'
-          return
+          this.colorError = "无效的色值";
+          return;
         }
       }
-      const command = this.colorFill ? commands.fill : commands.color
-      command({ color })
-      this.colorPickerVisible = false
+      const command = this.colorFill ? commands.fill : commands.color;
+      command({ color });
+      this.colorPickerVisible = false;
     },
     fileSelect(event, command) {
-      const file = event.target.files[0]
+      const file = event.target.files[0];
       this.imageUploader
         .upload(file)
-        .then(src => {
-          command({ src })
+        .then((src) => {
+          command({ src });
         })
         .finally(() => {
-          this.$refs.uploadInput.value = ''
-        })
+          this.$refs.uploadInput.value = "";
+        });
     },
     showLinkMenu(attrs) {
-      this.linkUrl = attrs.href
-      this.linkMenuIsActive = true
+      this.linkUrl = attrs.href;
+      this.linkMenuIsActive = true;
       this.$nextTick(() => {
-        this.$refs.linkInput.focus()
-      })
+        this.$refs.linkInput.focus();
+      });
     },
   },
-}
+};
 </script>
 <style lang="scss">
 $color-black: #000000;
@@ -1138,7 +1199,7 @@ $color-grey: #dddddd;
       .selectedCell:after {
         z-index: 2;
         position: absolute;
-        content: '';
+        content: "";
         left: 0;
         right: 0;
         top: 0;
@@ -1315,11 +1376,11 @@ img {
   z-index: 1;
 }
 
-.tooltip[x-placement^='top'] {
+.tooltip[x-placement^="top"] {
   margin-bottom: 5px;
 }
 
-.tooltip[x-placement^='top'] .tooltip-arrow {
+.tooltip[x-placement^="top"] .tooltip-arrow {
   border-width: 5px 5px 0 5px;
   border-left-color: transparent !important;
   border-right-color: transparent !important;
@@ -1330,11 +1391,11 @@ img {
   margin-bottom: 0;
 }
 
-.tooltip[x-placement^='bottom'] {
+.tooltip[x-placement^="bottom"] {
   margin-top: 5px;
 }
 
-.tooltip[x-placement^='bottom'] .tooltip-arrow {
+.tooltip[x-placement^="bottom"] .tooltip-arrow {
   border-width: 0 5px 5px 5px;
   border-left-color: transparent !important;
   border-right-color: transparent !important;
@@ -1345,11 +1406,11 @@ img {
   margin-bottom: 0;
 }
 
-.tooltip[x-placement^='right'] {
+.tooltip[x-placement^="right"] {
   margin-left: 5px;
 }
 
-.tooltip[x-placement^='right'] .tooltip-arrow {
+.tooltip[x-placement^="right"] .tooltip-arrow {
   border-width: 5px 5px 5px 0;
   border-left-color: transparent !important;
   border-top-color: transparent !important;
@@ -1360,11 +1421,11 @@ img {
   margin-right: 0;
 }
 
-.tooltip[x-placement^='left'] {
+.tooltip[x-placement^="left"] {
   margin-right: 5px;
 }
 
-.tooltip[x-placement^='left'] .tooltip-arrow {
+.tooltip[x-placement^="left"] .tooltip-arrow {
   border-width: 5px 0 5px 5px;
   border-top-color: transparent !important;
   border-right-color: transparent !important;
@@ -1387,13 +1448,13 @@ img {
   border-color: #f9f9f9;
 }
 
-.tooltip[aria-hidden='true'] {
+.tooltip[aria-hidden="true"] {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.15s, visibility 0.15s;
 }
 
-.tooltip[aria-hidden='false'] {
+.tooltip[aria-hidden="false"] {
   visibility: visible;
   opacity: 1;
   transition: opacity 0.15s;
