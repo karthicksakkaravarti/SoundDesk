@@ -38,6 +38,13 @@ class ScheduleSerailizers(serializers.ModelSerializer):
         model = models.Schedule
         fields = "__all__"
 
+class PlaylistSerailizers(serializers.ModelSerializer):
+    createdDateFormat = serializers.DateTimeField(source='CreatedDate', format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = models.Playlist
+        fields = "__all__"
+
 class PublishManagementSerailizers(serializers.ModelSerializer):
     class Meta:
         model = models.PublishManagement

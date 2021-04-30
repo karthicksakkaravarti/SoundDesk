@@ -84,6 +84,23 @@ class Schedule(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
 
+class Playlist(models.Model):
+    playlistname = models.CharField(max_length=200)
+    XCoOrdinates = models.IntegerField()
+    YCoOrdinates = models.IntegerField()
+    Width = models.IntegerField()
+    Height = models.IntegerField()
+    BorderLine = models.CharField(max_length=200)
+    BackGroundColor = models.CharField(max_length=200)
+    type = models.CharField(max_length=200)
+    singleLineMessage = models.TextField(null=True, blank=True)
+    multilineMessage = models.TextField(null=True, blank=True)
+    imageMessage = models.FileField(null=True, blank=True)
+    videoMessage = models.FileField(null=True, blank=True)
+    CreatedDate = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+
 class TextMessage(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     RegionDimensionAndCoOrdinates = models.ForeignKey(RegionDimensionAndCoOrdinates, on_delete=models.CASCADE)

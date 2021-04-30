@@ -35,6 +35,13 @@ class VMDConfigViewSet(viewsets.ModelViewSet):
 class PublishManagementViewSet(viewsets.ModelViewSet):
     queryset = models.PublishManagement.objects.all()
     serializer_class = serializers.PublishManagementSerailizers
+class PlaylistViewSet(viewsets.ModelViewSet):
+    queryset = models.Playlist.objects.all()
+    serializer_class = serializers.PlaylistSerailizers
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields = ['id', 'playlistname', 'XCoOrdinates', 'YCoOrdinates', 'Width', 'Height', 'BorderLine', 'BackGroundColor', 'type', 'singleLineMessage', 'multilineMessage', 'CreatedDate', 'user']
+    filterset_fields = ['id', 'playlistname', 'XCoOrdinates', 'YCoOrdinates', 'Width', 'Height', 'BorderLine', 'BackGroundColor', 'type', 'singleLineMessage', 'multilineMessage', 'CreatedDate', 'user']
+    search_fields  = [ 'playlistname',  'singleLineMessage', 'multilineMessage']
 
 class TextMessageViewSet(viewsets.ModelViewSet):
     queryset = models.TextMessage.objects.all()

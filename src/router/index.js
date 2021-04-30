@@ -41,6 +41,11 @@ const routes = [
                 meta: { title: 'VmdManagement' }
                 },
                 {
+                path: '/playlist',
+                component: () => import(/* webpackChunkName: "demo" */ '../components/Playlist/Home.vue'),
+                meta: { title: 'VmdManagement' }
+                },
+                {
                 path: '/SendMessage',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/Messaging/Home.vue'),
                 meta: { title: 'Send Message' }

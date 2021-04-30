@@ -184,6 +184,55 @@ const actions = {
             })
         })
     },
+    //Playlist
+    get_Playlist({commit}, queryparam){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.get('api/Playlist/'+queryparam)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    post_Playlist({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.post('api/Playlist/', payload)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    patch_Playlist({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.patch('api/Playlist/'+payload.id+'/', payload)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    delete_Playlist({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.delete('api/Playlist/'+payload.id+'/')
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
 }   
 
 export const Messaging = {

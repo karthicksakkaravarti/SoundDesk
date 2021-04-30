@@ -108,7 +108,6 @@
                 <v-col cols="12" sm="6">
                   <v-autocomplete
                     v-model="VMDObj.AssigneUser"
-                    :rules="[rules.required]"
                     label="Assigne User*"
                     auto-select-first
                     :items="['Active']"

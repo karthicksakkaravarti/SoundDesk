@@ -13,6 +13,18 @@
       ></v-avatar>
     </v-card-title> -->
 
+      <v-overlay :value="overlayMain">
+        <div class="text-center">
+          <v-progress-circular
+            indeterminate
+            color="primary"
+          ></v-progress-circular>
+          Saving
+        </div>
+      </v-overlay>
+      <v-alert dense v-if="userError" outlined type="error">
+        {{ userError }}
+      </v-alert>
       <v-window v-model="step">
         <v-window-item :value="1">
           <v-card elevation="0" color="grey lighten-4" flat tile>
@@ -65,10 +77,19 @@
                 </a-tooltip>
               </v-btn-toggle>
               <v-spacer></v-spacer>
+              <a-input
+                class="mr-2"
+                v-model="playlist"
+                style="width: 150px"
+                placeholder="Playlist Name"
+              />
+
               <a-dropdown-button @click="sendData" type="primary">
                 Send <v-icon color="primary">mdi-send-circle</v-icon>
                 <a-menu slot="overlay">
-                  <a-menu-item key="1"> Save to playlist </a-menu-item>
+                  <a-menu-item key="1" @click="SaveToPlaylist">
+                    Save to playlist
+                  </a-menu-item>
                 </a-menu>
               </a-dropdown-button>
 
@@ -238,73 +259,83 @@
             VMD/VMD Group Selection
           </h3>
           <br />
+          <a-radio-group class="ml-3" v-model="VmDSelectionValue">
+            <a-radio-button value="VMD" @click="vmd_or_Group = null">
+              VMD
+            </a-radio-button>
+            <a-radio-button value="VMDGroup" @click="vmd_or_Group = null">
+              VMD Group
+            </a-radio-button>
+          </a-radio-group>
           <v-row class="pa-2">
-            <a-radio-group class="ml-3" v-model="VmDSelectionValue" >
-        <a-radio-button value="VMD">
-          VMD
-        </a-radio-button>
-        <a-radio-button value="VMDGroup">
-          VMD Group
-        </a-radio-button>
-
-      </a-radio-group>
-
             <v-col cols="12" sm="6" v-if="VmDSelectionValue == 'VMD'">
               <v-autocomplete
-            chips
-            multiple
-            deletable-chips
-            dense
-            label="VMD's*"
-            auto-select-first
-            item-text="VMDName"
-            item-value="id"
-            :items="GetVMDS"
-          ></v-autocomplete>
-            </v-col >
+                class="pt-3"
+                chips
+                multiple
+                deletable-chips
+                v-model="vmd_or_Group"
+                dense
+                label="VMD's*"
+                auto-select-first
+                item-text="VMDName"
+                item-value="id"
+                :items="GetVMDS"
+              ></v-autocomplete>
+            </v-col>
             <v-col cols="12" sm="6" v-else>
-<v-autocomplete 
-            chips
-            multiple
-            deletable-chips
-            dense
-            label="VMD Group*"
-            auto-select-first
-            item-text="GroupName"
-            item-value="id"
-            :items="GetVMDGroups"
-          ></v-autocomplete>
+              <v-autocomplete
+                class="pt-2"
+                chips
+                multiple
+                deletable-chips
+                v-model="vmd_or_Group"
+                dense
+                label="VMD Group*"
+                auto-select-first
+                item-text="GroupName"
+                item-value="id"
+                :items="GetVMDGroups"
+              ></v-autocomplete>
             </v-col>
           </v-row>
         </v-window-item>
 
         <v-window-item :value="3">
-          <div class="pa-4 text-center">
-            <v-img
-              class="mb-4"
-              contain
-              height="128"
-              src="https://cdn.vuetifyjs.com/images/logos/v.svg"
-            ></v-img>
-            <h3 class="title font-weight-light mb-2">Welcome to Vuetify</h3>
-            <span class="caption grey--text">Thanks for signing up!</span>
-          </div>
+          <a-result status="success" title="Successfully Message Send to VMD">
+            <template #extra>
+              <a-button key="console" @click="step = 1" type="primary">
+                Back To Message
+              </a-button>
+              <a-input
+                class="mr-2"
+                v-model="playlist"
+                style="width: 150px"
+                placeholder="Playlist Name"
+              />
+              <a-button key="buy" @click="SaveToPlaylist">
+                Save into PLaylist
+              </a-button>
+            </template>
+          </a-result>
         </v-window-item>
       </v-window>
 
       <v-divider></v-divider>
 
-      <v-card-actions v-if="step != 1">
-        <v-btn text @click="step--"> Back </v-btn>
+      <v-card-actions v-if="step != 1 && step != 3">
+        <v-btn text @click="step--" outlined> Back </v-btn>
         <v-spacer></v-spacer>
-        <!-- <v-btn
-        :disabled="step === 3"
-        color="primary"
-        depressed
-        @click="step++"
-      >
-        Next
-      </v-btn> -->
+        <v-btn
+          v-if="step != 3"
+          color="success"
+          outlined
+          depressed
+          :disabled="!vmd_or_Group.length >= 1"
+          @click="step++"
+        >
+          Send <v-icon color="success">mdi-send-circle</v-icon>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -312,6 +343,9 @@
 <script>
 import { VMDMixins } from "../../mixins/VMDMixins";
 import { utility } from "../../mixins/utility";
+import { MessagingMixins } from "../../mixins/MessagingMixins";
+import { UsersMixins } from "../../mixins/UsersMixins";
+
 import Editor from "@/index.js";
 // import Moveable from "vue-moveable";
 
@@ -323,10 +357,10 @@ export default {
     Editor,
     // Moveable,
   },
-  mixins: [VMDMixins, utility],
+  mixins: [VMDMixins, utility, UsersMixins, MessagingMixins],
   mounted() {
     this.get_VMDS();
-    this.get_VMDSGroups()
+    this.get_VMDSGroups();
     this.load = true;
     this.messageModal = " ";
   },
@@ -334,8 +368,14 @@ export default {
     sendData() {
       this.$refs.RegionDimension_ref.validateFun().then((data) => {
         console.log(this.messageModal.length);
-        if (data && this.messageModal.length >= 2) {
+        if (
+          data &&
+          ["Single", "Multi"].includes(this.icon) &&
+          this.messageModal.length >= 2
+        ) {
           console.log("Validation Done");
+          this.step++;
+        } else if (data && this.previewImage && this.icon == "Image") {
           this.step++;
         } else {
           console.log("Please fill all the fields");
@@ -345,11 +385,131 @@ export default {
           });
         }
       });
-      // if(){
-      //   console.log("Validation Done")
-      // }else{
-      //   console.log('Please fill all the fields')
-      // }
+    },
+    SaveToPlaylist() {
+      this.overlayMain = true;
+      this.$refs.RegionDimension_ref.validateFun()
+        .then((data) => {
+          console.log(this.messageModal.length);
+          var payload = {
+            playlistname: this.playlist,
+            XCoOrdinates: this.$refs.RegionDimension_ref.dataObj.XCoOrdinates,
+            YCoOrdinates: this.$refs.RegionDimension_ref.dataObj.YCoOrdinates,
+            Width: this.$refs.RegionDimension_ref.dataObj.Width,
+            Height: this.$refs.RegionDimension_ref.dataObj.Height,
+            BorderLine: this.$refs.RegionDimension_ref.dataObj.BorderLine,
+            BackGroundColor: this.$refs.RegionDimension_ref.dataObj
+              .BackGroundColor,
+            type: this.icon,
+            singleLineMessage: "",
+            multilineMessage: "",
+            imageMessage: null,
+            videoMessage: null,
+            user: this.GetCurrentUser.id,
+          };
+          if (
+            data &&
+            ["Single", "Multi"].includes(this.icon) &&
+            this.messageModal.length >= 2
+          ) {
+            console.log("Validation Done");
+
+            if (this.icon == "Single") {
+              payload.singleLineMessage = this.messageModal;
+            } else if (this.icon == "Multi") {
+              payload.multilineMessage = this.messageModal;
+            } else if (this.icon == "Image") {
+              payload.multilineMessage = this.ImageFile;
+            } else if (this.icon == "Video") {
+              payload.multilineMessage = this.messageModal;
+            }
+            console.log(payload);
+            this.post_Playlist(payload)
+              .then((data) => {
+                this.$notification["success"]({
+                  message: "Playlist Saved Successfully",
+                });
+                this.overlayMain = false;
+
+                console.log(data);
+              })
+              .catch((err) => {
+                err;
+                this.overlayMain = false;
+                this.userError = err.response.data.Error;
+              });
+          } else if (data && this.previewImage && this.icon == "Image") {
+            let formData = new FormData();
+            formData.append("playlistname", payload.playlistname);
+            formData.append("XCoOrdinates", payload.XCoOrdinates);
+            formData.append("YCoOrdinates", payload.YCoOrdinates);
+            formData.append("Width", payload.Width);
+            formData.append("Height", payload.Height);
+            formData.append("BorderLine", payload.BorderLine);
+            formData.append("BackGroundColor", payload.BackGroundColor);
+            formData.append("type", payload.type);
+            formData.append("user", payload.user);
+            if (this.icon == "Image") {
+              formData.append("imageMessage", this.ImageFile);
+            } else if (this.icon == "Video") {
+              formData.append("videoMessage", this.VideoModal);
+            }
+            console.log(payload);
+            this.post_Playlist(formData)
+              .then(() => {
+                this.$notification["success"]({
+                  message: "Playlist Saved Successfully",
+                });
+                this.overlayMain = false;
+              })
+              .catch((err) => {
+                err;
+                this.overlayMain = false;
+                this.userError = err.response.data.Error;
+              });
+          } else if (data && this.VideoModal && this.icon == "Video") {
+            let formData = new FormData();
+            formData.append("playlistname", payload.playlistname);
+            formData.append("XCoOrdinates", payload.XCoOrdinates);
+            formData.append("YCoOrdinates", payload.YCoOrdinates);
+            formData.append("Width", payload.Width);
+            formData.append("Height", payload.Height);
+            formData.append("BorderLine", payload.BorderLine);
+            formData.append("BackGroundColor", payload.BackGroundColor);
+            formData.append("type", payload.type);
+            formData.append("user", payload.user);
+             if (this.icon == "Video") {
+              formData.append("videoMessage", this.VideoModal);
+            }
+            console.log(payload);
+            this.post_Playlist(formData)
+              .then(() => {
+                this.$notification["success"]({
+                  message: "Playlist Saved Successfully",
+                });
+                this.overlayMain = false;
+              })
+              .catch((err) => {
+                err;
+                this.overlayMain = false;
+                this.userError = err.response.data.Error;
+              });
+          } 
+          else {
+            this.overlayMain = false;
+            console.log("Please fill all the fields");
+            this.$notification["warn"]({
+              message: "Please fill all required fields",
+              // description: "Predefined Message Updated",
+            });
+          }
+        })
+        .catch((err) => {
+          err;
+          this.overlayMain = false;
+          console.log(err);
+          this.userError = err.response.data.Error;
+        });
     },
     selectImage() {
       this.$refs.fileInput.click();
@@ -359,6 +519,8 @@ export default {
       let file = input.files;
       console.log("pickFile called");
       if (file && file[0]) {
+        this.ImageFile = file[0];
+
         let reader = new FileReader();
         reader.onload = (e) => {
           this.previewImage = e.target.result;
@@ -410,9 +572,14 @@ export default {
   },
   data() {
     return {
-      VmDSelectionValue: 'VMD',
+      playlist: "Playlist 1",
+      userError: "",
+      overlayMain: false,
+      vmd_or_Group: "",
+      VmDSelectionValue: "VMD",
       step: 1,
       overlay: false,
+      ImageFile: null,
       previewImage: "",
       icon: "Single",
       imageModal: "",
