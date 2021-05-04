@@ -114,8 +114,13 @@ class TextMessage(models.Model):
 class PublishManagement(models.Model):
     vmd = models.ManyToManyField(VMDS, null=True, blank=True)
     vmdGroups = models.ManyToManyField(VMDGroups, null=True, blank=True)
-    message = models.CharField(max_length=500)
-    Schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    StartDate = models.DateField()
+    StartTime = models.TimeField()
+    Duration = models.CharField(max_length=100)
+    RepeatCount = models.IntegerField()
     type = models.CharField(max_length=200)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    playlist = models.ManyToManyField(Playlist)
     status = models.CharField(max_length=200)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    CreatedDate = models.DateTimeField(auto_now=True)
+

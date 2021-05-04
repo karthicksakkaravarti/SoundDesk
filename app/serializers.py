@@ -45,10 +45,10 @@ class PlaylistSerailizers(serializers.ModelSerializer):
         model = models.Playlist
         fields = "__all__"
 
-class PublishManagementSerailizers(serializers.ModelSerializer):
-    class Meta:
-        model = models.PublishManagement
-        fields = "__all__"
+# class PublishManagementSerailizers(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.PublishManagement
+#         fields = "__all__"
 
 class TextMessageSerailizers(serializers.ModelSerializer):
 

@@ -36,6 +36,16 @@ const routes = [
                 meta: { title: 'Predefined Messages' }
                 },
                 {
+                path: '/Sequence',
+                component: () => import(/* webpackChunkName: "demo" */ '../components/Messaging/Sequence.vue'),
+                meta: { title: 'Sequence Messages' }
+                },
+                {
+                path: '/Schedule',
+                component: () => import(/* webpackChunkName: "demo" */ '../components/Messaging/Schedule.vue'),
+                meta: { title: 'Sequence Messages' }
+                },
+                {
                 path: '/VmdConfiguration',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/VMD_Configuration/home.vue'),
                 meta: { title: 'VmdManagement' }

@@ -202,6 +202,8 @@ export default {
     items: [
       { icon: 'mdi-view-dashboard', text: 'Dashboard' , to: "dashboard"},
       { icon: 'mdi-message', text: 'Messaging' , to: "SendMessage"},
+      { icon: 'mdi-view-sequential', text: 'Sequence' , to: "Sequence"},
+      { icon: 'mdi-repeat', text: 'Schedule' , to: "Schedule"},
       { icon: 'mdi-message', text: 'PlayList' , to: "playlist"},
       { icon: 'mdi-file-chart', text: 'Reports' , to: "reports"},
       { icon: 'mdi-desktop-tower', text: 'VMDS' , to: "VmdManagement"},

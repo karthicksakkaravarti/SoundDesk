@@ -1,232 +1,252 @@
 <template>
   <div>
-    <div v-if="this.GetCurrentUser.id" v-once>{{ LoadData() }}</div>
-    <h3 style="border-left: 5px solid #394a59" class="pl-3">Schedule</h3>
-    <div class="pl-4 pt-2">
-      <v-form v-model="form" ref="formmodal">
-        <v-row>
-          <v-col>
-            <v-menu
-              ref="menu1"
-              v-model="menu1"
-              :close-on-content-click="false"
-              transition="scale-transition"
-              offset-y
-              max-width="290px"
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="dateFormatted"
-                  :rules="[rules.required]"
-                  label="Start Date"
-                  hint="MM/DD/YYYY format"
-                  persistent-hint
-                  append-icon="mdi-calendar"
-                  v-bind="attrs"
-                  @blur="date = parseDate(dateFormatted)"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="date"
-                @change="dataObj.StartDate = date"
-                no-title
-                @input="menu1 = false"
-              ></v-date-picker>
-            </v-menu>
-            <!-- <p>
-              Date in ISO format: <strong>{{ date }}</strong>
-            </p> -->
-
-            <!-- <v-text-field
-              append-icon="mdi-calendar"
-              dense
-              label="Start Date"
-            ></v-text-field> -->
-          </v-col>
-          <v-col>
-            <v-menu
-              ref="menu"
-              v-model="menu3"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              :return-value.sync="time"
-              transition="scale-transition"
-              offset-y
-              max-width="290px"
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="dataObj.StartTime"
-                  :rules="[rules.required]"
-                  label="Start Time"
-                  append-icon="mdi-clock-time-eight"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-time-picker
-                v-if="menu3"
-                v-model="dataObj.StartTime"
-                full-width
-                @click:minute="$refs.menu.save(dataObj.StartTime)"
-              ></v-time-picker>
-            </v-menu>
-
-            <!-- <v-text-field
-              append-icon="mdi-clock-time-eight"
-              dense
-              label="Start Time"
-            ></v-text-field> -->
-          </v-col>
-          <v-col>
+    <v-breadcrumbs :items="items"></v-breadcrumbs>
+    <div v-once v-if="GetCurrentUser && GetCurrentUser.id">
+      {{ LoadAllTestMessageData() }}
+    </div>
+    <v-card>
+      <v-card-text>
+        <!-- VMD Selection -->
+        <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+          VMD/VMD Group Selection
+        </h3>
+        <br />
+        <a-radio-group class="ml-3" v-model="VmDSelectionValue">
+          <a-radio-button value="VMD" @click="vmd_or_Group = []">
+            VMD
+          </a-radio-button>
+          <a-radio-button value="VMDGroup" @click="vmd_or_Group = []">
+            VMD Group
+          </a-radio-button>
+        </a-radio-group>
+        <v-row class="pa-2">
+          <v-col cols="12" sm="6" v-if="VmDSelectionValue == 'VMD'">
             <v-autocomplete
-              label="Duration"
-              auto-select-first
-              v-model="dataObj.Duration"
+              class="pt-3"
+              chips
+              multiple
+              deletable-chips
+              v-model="vmd_or_Group"
               :rules="[rules.required]"
-              append-icon="mdi-clock-end"
-              :items="['1 Minites', '2 Minites']"
-            ></v-autocomplete>
-
-            <!-- <v-text-field
-              append-icon="mdi-clock-end"
               dense
-              label="Duration"
-            ></v-text-field> -->
+              label="VMD's*"
+              auto-select-first
+              item-text="VMDName"
+              item-value="id"
+              :items="GetVMDS"
+            ></v-autocomplete>
           </v-col>
-          <v-col>
+          <v-col cols="12" sm="6" v-else>
             <v-autocomplete
-              label="Repeat Count"
-              auto-select-first
-              v-model="dataObj.RepeatCount"
+              class="pt-2"
+              chips
+              multiple
+              deletable-chips
+              v-model="vmd_or_Group"
               :rules="[rules.required]"
-              append-icon="mdi-repeat"
-              :items="[1, 2, 3, 4, 5]"
-            ></v-autocomplete>
-            <!-- <v-text-field
-              append-icon="mdi-repeat"
               dense
-              label="Repeat Count"
-            ></v-text-field> -->
+              label="VMD Group*"
+              auto-select-first
+              item-text="GroupName"
+              item-value="id"
+              :items="GetVMDGroups"
+            ></v-autocomplete>
           </v-col>
         </v-row>
-      </v-form>
-    </div>
+
+        <v-row>
+          <v-col cols="12" sm="6">
+            <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+              Playlist Detials
+            </h3>
+            <v-form ref="sequenceModal">
+              <div
+                class="pt-2"
+                v-bind:key="i.id"
+                v-for="i in sequenceListMessage"
+              >
+                <v-autocomplete
+                  v-model="i.modal"
+                  append-outer-icon="mdi-close-circle"
+                  @click:append-outer="RemoveSequenceList(i)"
+                  dense
+                  return-object
+                  :rules="[rules.required]"
+                  :label="`Select Playlist`"
+                  auto-select-first
+                  item-text="playlistname"
+                  item-value="id"
+                  :items="AllMessagesDataobj"
+                ></v-autocomplete>
+                <!-- <p>Text</p>  <p @click="RemoveSequenceList(i)">Remove</p> -->
+              </div>
+              <!-- <v-btn small outlined @click="addSequence">+ Add Playlist</v-btn> -->
+            </v-form>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+              Message Preview
+            </h3>
+            <!-- <b>{{sequenceListMessage}}</b> -->
+
+            <div v-bind:key="i.id" v-for="i in sequenceListMessage">
+              <center>
+                <template v-if="i && i.modal">
+                  <iframe
+                    v-if="i.modal.type == 'Single'"
+                    class="ml-2"
+                    :style="`background-color:${i.modal.BackGroundColor};border: 4px solid ${i.modal.BorderLine}`"
+                    :srcdoc="i.modal.singleLineMessage"
+                    :height="i.modal.Height"
+                    :width="i.modal.Width"
+                    title="Iframe Example"
+                  >
+                  </iframe>
+                  <iframe
+                    v-else-if="i.modal.type == 'Multi'"
+                    class="ml-2"
+                    :style="`background-color:${i.modal.BackGroundColor};border: 4px solid ${i.modal.BorderLine}`"
+                    :srcdoc="i.modal.multilineMessage"
+                    :height="i.modal.Height"
+                    :width="i.modal.Width"
+                    title="Iframe Example"
+                  >
+                  </iframe>
+                  <img
+                    v-else-if="i.modal.type == 'Image'"
+                    :src="i.modal.imageMessage"
+                    alt=""
+                  />
+                  <video
+                    width="400"
+                    v-else-if="i.modal.type == 'Video'"
+                    controls
+                  >
+                    <source :src="i.modal.videoMessage" type="video/mp4" />
+                    Your browser does not support HTML video.
+                  </video>
+                </template>
+              </center>
+            </div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <ScheduleForm :loaddata="false" ref="ScheduleForm_ref" />
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="success" outlined depressed @click="sendMesage">
+          Send <v-icon color="success">mdi-send-circle</v-icon>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 
 <script>
-import { UsersMixins } from "../../mixins/UsersMixins";
 import { MessagingMixins } from "../../mixins/MessagingMixins";
+import { UsersMixins } from "../../mixins/UsersMixins";
+import { VMDMixins } from "../../mixins/VMDMixins";
+import ScheduleForm from "./ScheduleForm";
 
 export default {
-  mixins: [MessagingMixins, UsersMixins],
-  props: {
-    typemessage: { default: "single" },
+  mixins: [MessagingMixins, UsersMixins, VMDMixins],
+  mounted() {
+    this.get_VMDS();
+    this.get_VMDSGroups();
   },
-  data: () => ({
-    date: new Date().toISOString().substr(0, 10),
-    dateFormatted: "",
-    menu1: false,
-    menu2: false,
-    time: null,
-    menu3: false,
-    modal3: false,
-    form: false,
-    dataObj: {
-      StartDate: null,
-      StartTime: null,
-      Duration: null,
-      RepeatCount: null,
-    },
-    rules: {
-      required: (value) => !!value || "Required.",
-      counter: (value) => value.length <= 20 || "Max 20 characters",
-      email: (value) => {
-        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return pattern.test(value) || "Invalid e-mail.";
-      },
-      confirmpassword: (value) => {
-        if (this.userObj.password == value) {
-          return true;
-        } else {
-          return false || "Not Match";
-        }
-      },
-    },
-  }),
-  computed: {
-    computedDateFormatted() {
-      return this.formatDate(this.date);
-    },
-  },
-  watch: {
-    date() {
-      this.dateFormatted = this.formatDate(this.date);
-    },
-  },
-
+  components: { ScheduleForm },
   methods: {
-    LoadData() {
-      this.get_Schedule(
-        "?user=" + this.GetCurrentUser.id + "&type=" + this.typemessage
-      ).then((data) => {
-        if (data.data.length >= 1) {
-          this.dataObj = data.data[0];
-          console.log('this.dataObj',this.dataObj)
-          this.date = this.dataObj.StartDate;
-        }
-      });
-    },
-    formatDate(date) {
-      if (!date) return null;
-
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
-    },
-    parseDate(date) {
-      if (!date) return null;
-
-      const [month, day, year] = date.split("/");
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    },
-    validateFun() {
-      return new Promise((resolve, reject) => {
-        if (this.$refs.formmodal.validate()) {
-          if (this.dataObj.id) {
-            // Update
-            this.patch_Schedule(this.dataObj)
-              .then(() => {
-                return resolve(true);
-              })
-              .catch(() => {
-                return resolve(false);
-              });
-          } else {
-            // Create
-            this.dataObj.user = this.GetCurrentUser.id;
-            this.dataObj.type = this.typemessage;
-
-            this.post_Schedule(this.dataObj)
-              .then((data) => {
-                this.dataObj = data.data;
-                this.LoadData();
-                return resolve(true);
-              })
-              .catch(() => {
-                return resolve(false);
-              });
-          }
-          console.log(reject);
+    sendMesage() {
+      this.$refs.sequenceModal.validate();
+      this.$refs.ScheduleForm_ref.validateFun().then(() => {
+        if (
+          this.$refs.sequenceModal.validate() &&
+          this.sequenceListMessage.length >= 1 &&
+          this.vmd_or_Group.length >= 1
+        ) {
+          this.$notification["success"]({
+            message: "Sequence Message Send successfully",
+            // description: "Predefined Message Updated",
+          });
         } else {
-          return false;
+          this.$notification["warn"]({
+            message: "Please fill all the required field",
+            // description: "Predefined Message Updated",
+          });
         }
       });
     },
+    addSequence() {
+      var len = this.sequenceListMessage.length;
+      this.sequenceListMessage.push({ id: len + 1, modal: null });
+    },
+    RemoveSequenceList(item) {
+      console.log(item);
+      for (var i = 0; i < this.sequenceListMessage.length; i++) {
+        if (this.sequenceListMessage[i].id === item.id) {
+          this.sequenceListMessage.splice(i, 1);
+        }
+      }
+    },
+    LoadAllTestMessageData() {
+      this.get_Playlist("?user=" + this.GetCurrentUser.id).then((data) => {
+        if (data.data.length >= 1) {
+          this.AllMessagesDataobj = data.data;
+        }
+      });
+    },
+  },
+  data() {
+    return {
+      AllMessagesDataobj: [],
+      rules: {
+        required: (value) => !!value || "Required.",
+        counter: (value) => value.length <= 20 || "Max 20 characters",
+        email: (value) => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return pattern.test(value) || "Invalid e-mail.";
+        },
+        confirmpassword: (value) => {
+          if (this.userObj.password == value) {
+            return true;
+          } else {
+            return false || "Not Match";
+          }
+        },
+        listreqired: (value) => {
+          if (value.length >= 1) {
+            return true;
+          } else {
+            return false || "Required.";
+          }
+        },
+      },
+      sequenceListMessage: [{ id: 1, modal: null }],
+
+      VmDSelectionValue: "VMD",
+      vmd_or_Group: [],
+      items: [
+        {
+          text: "Dashboard",
+          disabled: false,
+          href: "/#/dashboard",
+        },
+        {
+          text: "Messaging",
+          disabled: false,
+          href: "/#/SendMessage",
+        },
+        {
+          text: "Schedule Message",
+          disabled: false,
+        },
+      ],
+    };
   },
 };
 </script>

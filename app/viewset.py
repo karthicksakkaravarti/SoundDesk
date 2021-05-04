@@ -31,10 +31,10 @@ class VMDSViewSet(viewsets.ModelViewSet):
 class VMDConfigViewSet(viewsets.ModelViewSet):
     queryset = models.VMDConfig.objects.all()
     serializer_class = serializers.VMDConfigSerailizers
-
-class PublishManagementViewSet(viewsets.ModelViewSet):
-    queryset = models.PublishManagement.objects.all()
-    serializer_class = serializers.PublishManagementSerailizers
+#
+# class PublishManagementViewSet(viewsets.ModelViewSet):
+#     queryset = models.PublishManagement.objects.all()
+#     serializer_class = serializers.PublishManagementSerailizers
 class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = models.Playlist.objects.all()
     serializer_class = serializers.PlaylistSerailizers

@@ -7,9 +7,15 @@ Vue.use(Antd);
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify';
+import VueLayers from 'vuelayers'
+import 'vuelayers/lib/style.css' // needs css-loader
+Vue.use(VueLayers)
+import Buefy from 'buefy'
+import 'buefy/dist/buefy.css'
 
-
-
+Vue.use(Buefy, {
+  defaultIconPack: 'fa',
+})
 Vue.config.productionTip = false
 
 new Vue({

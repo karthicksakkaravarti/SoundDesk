@@ -90,7 +90,7 @@
                     :rules="[rules.required]"
                     label="VMD Status*"
                     auto-select-first
-                    :items="['Active']"
+                    :items="['Active',  'InActive']"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="6" class="pt-0">
@@ -108,9 +108,9 @@
                 <v-col cols="12" sm="6">
                   <v-autocomplete
                     v-model="VMDObj.AssigneUser"
-                    label="Assigne User*"
+                    label="Assigne User"
                     auto-select-first
-                    :items="['Active']"
+                    :items="['Active' ]"
                   ></v-autocomplete>
                 </v-col>
               </v-row>
