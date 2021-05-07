@@ -1,6 +1,5 @@
 <template>
   <section class="pa-2">
-    
     <v-breadcrumbs :items="items"></v-breadcrumbs>
     <a-card class="rounded-lg mt-0" style="background-color: #dae1ed">
       <a-row>
@@ -37,7 +36,15 @@
                 <span>Online VMD's </span>
               </template>
               <a>
-                <a-statistic title="Online VMD's" :value="GetVMDS.filter(obj => {return obj.VMDStatus == 'Active'}).length" class="demo-class">
+                <a-statistic
+                  title="Online VMD's"
+                  :value="
+                    GetVMDS.filter((obj) => {
+                      return obj.VMDStatus == 'Active';
+                    }).length
+                  "
+                  class="demo-class"
+                >
                   <template #suffix>
                     <a-icon
                       :style="{ fontSize: '16px', color: 'green' }"
@@ -56,7 +63,11 @@
               <a>
                 <a-statistic
                   title="Offiline VMD's"
-                  :value="GetVMDS.filter(obj => {return obj.VMDStatus == 'InActive'}).length"
+                  :value="
+                    GetVMDS.filter((obj) => {
+                      return obj.VMDStatus == 'InActive';
+                    }).length
+                  "
                   class="demo-class"
                 >
                   <template #suffix>
@@ -82,32 +93,48 @@
 
                   </template> -->
       </a-row>
-      
     </a-card>
     <v-row class="mt-2">
       <v-col cols="12" sm="7">
-          <v-card outlined>
-            <GoogleMap/>
-          </v-card>
+        <v-card outlined>
+          <GoogleMap :vmd="GetVMDS" />
+        </v-card>
       </v-col>
       <v-col cols="12" sm="5">
         <!-- <b>{{GetVMDS}}</b> -->
-          <v-card outlined>
-            <v-data-table
-            class="mt-2"
-          :headers="[
-          {'text': 'VMD ID', 'value': 'id'},
-          {'text': 'VMD Name', 'value': 'VMDName'},
-          {'text': 'VMD Ip', 'value': 'VMDIPAddress'},
-          {'text': 'VMD Status', 'value': 'VMDStatus'},
-          {'text': 'Screen Shot', 'value': 'Screen Shot'}
-          ]"
-          :items="GetVMDS">
-            <template v-slot:item.VMDStatus= {item} class="mt-2">
-                  <a-tag type="success">{{item.VMDStatus}}</a-tag>
-                </template>
+        <v-card-title>
+          VMD List
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-card-title>
+        <v-card outlined>
+          <v-data-table
+            
+            :search="search"
+            :headers="[
+              { text: 'VMD ID', value: 'id' },
+              { text: 'VMD Name', value: 'VMDName' },
+              { text: 'VMD Ip', value: 'VMDIPAddress' },
+              { text: 'VMD Status', value: 'VMDStatus' },
+              { text: 'Screen Shot', value: 'ScreenShot' },
+            ]"
+            :items="GetVMDS"
+          >
+            
+            <template v-slot:item.VMDStatus="{ item }" >
+              <v-chip  :color="item.VMDStatus == 'Active' ? 'green' : 'red'">{{
+                item.VMDStatus
+              }}</v-chip>
+            </template>
+           
           </v-data-table>
-          </v-card>
+        </v-card>
       </v-col>
     </v-row>
   </section>
@@ -115,19 +142,19 @@
 
 <script>
 import { VMDMixins } from "../mixins/VMDMixins";
-import GoogleMap from './GoogleMap.vue'
+import GoogleMap from "./GoogleMap.vue";
 
 export default {
-    mixins: [VMDMixins],
-  mounted(){
-        this.get_VMDS();
-
+  mixins: [VMDMixins],
+  mounted() {
+    this.get_VMDS();
   },
-  components:{
-    GoogleMap
+  components: {
+    GoogleMap,
   },
   data() {
     return {
+      search: "",
       items: [
         {
           text: "Home",

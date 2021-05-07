@@ -234,7 +234,7 @@ export default {
   data() {
     return {
       vmd_or_Group: [],
-      VmDSelectionValue: "",
+      VmDSelectionValue: "VMD",
       step: 1,
       overlayMain: false,
       Playlist: [],

@@ -31,6 +31,11 @@ const routes = [
                 meta: { title: 'VmdManagement' }
                 },
                 {
+                path: '/GoogleMap',
+                component: () => import(/* webpackChunkName: "demo" */ '../components/GoogleMap.vue'),
+                meta: { title: 'VmdManagement' }
+                },
+                {
                 path: '/Predefined',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/Messaging/Predefined_Sequence.vue'),
                 meta: { title: 'Predefined Messages' }

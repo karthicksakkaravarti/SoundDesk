@@ -142,6 +142,7 @@
     </v-row>
 
     <v-data-table
+    class="mt-4"
       :loading="loading"
       :items="UsersList"
       loading-text="Loading... Please wait"

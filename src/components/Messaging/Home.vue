@@ -75,6 +75,16 @@
                     <v-icon>mdi-file-video</v-icon>
                   </v-btn>
                 </a-tooltip>
+                <a-tooltip placement="bottom">
+                  <template slot="title">
+                    <span>Combinational Message</span>
+                  </template>
+                  <v-btn value="Combine">
+                    <!-- <span class="hidden-sm-and-down">Video</span> -->
+
+                    <v-icon>mdi-vector-combine</v-icon>
+                  </v-btn>
+                </a-tooltip>
               </v-btn-toggle>
               <v-spacer></v-spacer>
               <a-input
@@ -98,8 +108,10 @@
         </v-btn> -->
             </v-toolbar>
           </v-card>
-
-          <v-row class="pt-1">
+          <template v-if="icon == 'Combine'">
+            <Combinational ref="combinationActualPreviewRef" />
+          </template>
+          <v-row class="pt-1" v-else>
             <v-col cols="12" sm="8">
               <v-card outlined>
                 <v-card-text>
@@ -211,7 +223,8 @@
           <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
             Message Preview
           </h3>
-          <v-card-text v-if="$refs.RegionDimension_ref">
+         
+          <v-card-text v-if="$refs.RegionDimension_ref && icon != 'Combine'">
             <div
               v-if="icon == 'Image'"
               class="imagePreviewWrapper"
@@ -255,6 +268,13 @@
               </v-overlay>
             </center>
           </v-card-text>
+           <template v-else>
+             <v-card elevation="0"  class="mt-2" v-if="combinatioPreview" >
+               <!-- <b>{{combinatioPreview}}</b> -->
+                       <CombinationalPreview :PreviewData="combinatioPreview" />
+          
+        </v-card>
+          </template>
           <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
             VMD/VMD Group Selection
           </h3>
@@ -345,16 +365,22 @@ import { VMDMixins } from "../../mixins/VMDMixins";
 import { utility } from "../../mixins/utility";
 import { MessagingMixins } from "../../mixins/MessagingMixins";
 import { UsersMixins } from "../../mixins/UsersMixins";
+// import VueDragResize from "vue-drag-resize";
 
 import Editor from "@/index.js";
 // import Moveable from "vue-moveable";
 
 import RegionDimension from "./RegionDimension";
+import Combinational from "./Combinational";
+import CombinationalPreview from "./CombinationalPreview";
 
 export default {
   components: {
     RegionDimension,
     Editor,
+    Combinational,
+    // VueDragResize,
+    CombinationalPreview
     // Moveable,
   },
   mixins: [VMDMixins, utility, UsersMixins, MessagingMixins],
@@ -366,7 +392,8 @@ export default {
   },
   methods: {
     sendData() {
-      this.$refs.RegionDimension_ref.validateFun().then((data) => {
+      if (this.icon != 'Combine'){
+        this.$refs.RegionDimension_ref.validateFun().then((data) => {
         console.log(this.messageModal.length);
         if (
           data &&
@@ -385,6 +412,12 @@ export default {
           });
         }
       });
+      }
+      else{
+                  this.combinatioPreview = this.$refs.combinationActualPreviewRef.panes
+                  this.step++;
+      }
+      
     },
     SaveToPlaylist() {
       this.overlayMain = true;
@@ -478,7 +511,7 @@ export default {
             formData.append("BackGroundColor", payload.BackGroundColor);
             formData.append("type", payload.type);
             formData.append("user", payload.user);
-             if (this.icon == "Video") {
+            if (this.icon == "Video") {
               formData.append("videoMessage", this.VideoModal);
             }
             console.log(payload);
@@ -494,8 +527,7 @@ export default {
                 this.overlayMain = false;
                 this.userError = err.response.data.Error;
               });
-          } 
-          else {
+          } else {
             this.overlayMain = false;
             console.log("Please fill all the fields");
             this.$notification["warn"]({
@@ -572,6 +604,8 @@ export default {
   },
   data() {
     return {
+      loadPreview: false,
+      combinatioPreview: null,
       playlist: "Playlist 1",
       userError: "",
       overlayMain: false,

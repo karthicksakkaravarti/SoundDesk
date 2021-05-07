@@ -10,12 +10,12 @@ import vuetify from './plugins/vuetify';
 import VueLayers from 'vuelayers'
 import 'vuelayers/lib/style.css' // needs css-loader
 Vue.use(VueLayers)
-import Buefy from 'buefy'
-import 'buefy/dist/buefy.css'
+// import Buefy from 'buefy'
+// import 'buefy/dist/buefy.css'
 
-Vue.use(Buefy, {
-  defaultIconPack: 'fa',
-})
+// Vue.use(Buefy, {
+//   defaultIconPack: 'fa',
+// })
 Vue.config.productionTip = false
 
 new Vue({
