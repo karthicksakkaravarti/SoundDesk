@@ -27,6 +27,10 @@ class VMDSViewSet(viewsets.ModelViewSet):
     queryset = models.VMDS.objects.all()
     serializer_class = serializers.VMDSSerailizers
 
+class ReportsViewSet(viewsets.ModelViewSet):
+    queryset = models.Reports.objects.all()
+    serializer_class = serializers.ReportsSerailizers
+
 
 class VMDConfigViewSet(viewsets.ModelViewSet):
     queryset = models.VMDConfig.objects.all()

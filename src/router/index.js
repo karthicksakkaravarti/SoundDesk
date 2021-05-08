@@ -46,6 +46,11 @@ const routes = [
                 meta: { title: 'Sequence Messages' }
                 },
                 {
+                path: '/reports',
+                component: () => import(/* webpackChunkName: "demo" */ '../components/Reports/Home.vue'),
+                meta: { title: 'Sequence Messages' }
+                },
+                {
                 path: '/Schedule',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/Messaging/Schedule.vue'),
                 meta: { title: 'Sequence Messages' }

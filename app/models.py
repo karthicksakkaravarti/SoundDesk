@@ -30,6 +30,7 @@ class DeveiceGroup(models.Model):
         return self.name
 
 
+
 class VMDS(models.Model):
     VMDName = models.CharField(max_length=200)
     VMDLocation = models.CharField(max_length=200)
@@ -74,6 +75,11 @@ class RegionDimensionAndCoOrdinates(models.Model):
     type = models.CharField(max_length=200)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
+class Reports(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    VMDS = models.ManyToManyField(VMDS, null=True, blank=True)
+    VMDGroups = models.ManyToManyField(VMDGroups, null=True, blank=True)
+    message = models.TextField()
 
 class Schedule(models.Model):
     StartDate = models.DateField()

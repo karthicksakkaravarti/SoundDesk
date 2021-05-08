@@ -25,6 +25,18 @@ const actions = {
             })
         })
     },
+    post_callColorLightApi({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.post('api/ColorLightAPI', payload)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
     post_RegionDimensionAndCoOrdinates({commit}, payload){
         commit
         return new Promise((resolve, reject) => {
@@ -176,6 +188,55 @@ const actions = {
         commit
         return new Promise((resolve, reject) => {
             Axios.delete('api/PublishManagement/'+payload.id+'/')
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    //Reports
+    get_Reports({commit}, queryparam){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.get('api/Reports/'+queryparam)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    post_Reports({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.post('api/Reports/', payload)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    patch_Reports({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.patch('api/Reports/'+payload.id+'/', payload)
+            .then(data => {
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
+    delete_Reports({commit}, payload){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.delete('api/Reports/'+payload.id+'/')
             .then(data => {
                 resolve(data)
             })

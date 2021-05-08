@@ -28,6 +28,7 @@ class VMDSSerailizers(serializers.ModelSerializer):
         model = models.VMDS
         fields = "__all__"
 
+
 class RegionDimensionAndCoOrdinatesSSerailizers(serializers.ModelSerializer):
     class Meta:
         model = models.RegionDimensionAndCoOrdinates
@@ -125,4 +126,18 @@ class UsersSerailizers(serializers.ModelSerializer):
         user.save()
 
         return user
+
+class ReportsSerailizersTemp(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Reports
+        fields = "__all__"
+
+class ReportsSerailizers(serializers.ModelSerializer):
+    user = UsersSerailizers(required=False)
+    VMDS = VMDSSerailizers(many=True, required=True)
+    VMDGroups = VMDGroupsSerailizers(many=True,required=True)
+    class Meta:
+        model = models.Reports
+        fields = "__all__"
 

@@ -5,7 +5,10 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import path, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from . import (router)
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from . import (router, ColorLightAPI)
 
 class MyFormView(LoginRequiredMixin, TemplateView):
     template_name = 'index.html'
@@ -25,11 +28,26 @@ def upload(request):
         uploaded_file_url = fs.url(filename)
         print(uploaded_file_url)
     return JsonResponse({'key': uploaded_file_url})
+
+
+@api_view(('POST',))
+def ColorLightAPIFun(request):
+    print(request.data)
+    try:
+        cl_obj = ColorLightAPI.ColorLightAPI()
+        response = cl_obj.singleLineMessage(request.data)
+        return Response(response)
+    except Exception as e:
+        print("exception in ColorLightAPI", str(e))
+    return Response("ColorLightAPI Trigered")
+
+
 app_name = "Server"
 
 urlpatterns = [
     path('', MyFormView.as_view(), name='home_page'),  # redirection after
     path('upload', upload ),  # redirection after
+    path('api/ColorLightAPI', ColorLightAPIFun ),  # redirection after
 ]
 
 urlpatterns += router.router.urls

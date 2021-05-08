@@ -1,8 +1,10 @@
 <template>
   <div class="pa-1">
+    
+
     <v-breadcrumbs :items="items"></v-breadcrumbs>
 
-    <v-card>
+    <v-card elevation="0">
       <!-- <v-card-title class="title font-weight-regular justify-space-between">
       <span>{{ currentTitle }}</span>
       <v-avatar
@@ -20,6 +22,15 @@
             color="primary"
           ></v-progress-circular>
           Saving
+        </div>
+      </v-overlay>
+      <v-overlay :value="SendApiLoader">
+        <div class="text-center">
+          <v-progress-circular
+            indeterminate
+            color="primary"
+          ></v-progress-circular>
+          Sending Messages to VMD's, Please wait ...
         </div>
       </v-overlay>
       <v-alert dense v-if="userError" outlined type="error">
@@ -280,10 +291,10 @@
           </h3>
           <br />
           <a-radio-group class="ml-3" v-model="VmDSelectionValue">
-            <a-radio-button value="VMD" @click="vmd_or_Group = null">
+            <a-radio-button value="VMD" @click="vmd_or_Group = []">
               VMD
             </a-radio-button>
-            <a-radio-button value="VMDGroup" @click="vmd_or_Group = null">
+            <a-radio-button value="VMDGroup" @click="vmd_or_Group = []">
               VMD Group
             </a-radio-button>
           </a-radio-group>
@@ -321,8 +332,8 @@
           </v-row>
         </v-window-item>
 
-        <v-window-item :value="3">
-          <a-result status="success" title="Successfully Message Send to VMD">
+        <v-window-item :value="3" >
+          <!-- <a-result status="success" title="Successfully Message Send to VMD">
             <template #extra>
               <a-button key="console" @click="step = 1" type="primary">
                 Back To Message
@@ -337,7 +348,25 @@
                 Save into PLaylist
               </a-button>
             </template>
-          </a-result>
+          </a-result> -->
+          <!-- <b>ApiResponse{{ApiResponse}}</b> -->
+          <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+            Message Status
+          </h3>
+          <v-data-table
+          :headers="[
+            {'text': 'IP', 'value': 'IP' },
+            {'text': 'Status Code', 'value': 'StatusCode' },
+            {'text': 'Response', 'value': 'Response' }
+            ]"
+          :items="ApiResponse">
+
+          </v-data-table>
+         <center>
+           <a-button key="console" @click="step = 1" type="primary">
+                Back To Message
+              </a-button>
+         </center>
         </v-window-item>
       </v-window>
 
@@ -352,7 +381,8 @@
           outlined
           depressed
           :disabled="!vmd_or_Group.length >= 1"
-          @click="step++"
+          :loading="SendApiLoader"
+          @click="SendMessageToVMD"
         >
           Send <v-icon color="success">mdi-send-circle</v-icon>
         </v-btn>
@@ -391,6 +421,56 @@ export default {
     this.messageModal = " ";
   },
   methods: {
+    SendMessageToVMD(){
+      this.SendApiLoader = true
+      console.log("SendMessageToVMD")
+      var payload = {
+            playlistname: this.playlist,
+            XCoOrdinates: this.$refs.RegionDimension_ref.dataObj.XCoOrdinates,
+            YCoOrdinates: this.$refs.RegionDimension_ref.dataObj.YCoOrdinates,
+            Width: this.$refs.RegionDimension_ref.dataObj.Width,
+            Height: this.$refs.RegionDimension_ref.dataObj.Height,
+            BorderLine: this.$refs.RegionDimension_ref.dataObj.BorderLine,
+            BackGroundColor: this.$refs.RegionDimension_ref.dataObj
+              .BackGroundColor,
+            type: this.icon,
+            singleLineMessage: "",
+            multilineMessage: "",
+            imageMessage: null,
+            videoMessage: null,
+            user: this.GetCurrentUser.id,
+            vmd_or_Group: this.vmd_or_Group,
+            VmDSelectionValue: this.VmDSelectionValue
+          };
+        if (
+            ["Single", "Multi"].includes(this.icon) &&
+            this.messageModal.length >= 2
+          ) {
+            console.log("Validation Done");
+
+            if (this.icon == "Single") {
+              payload.singleLineMessage = this.messageModal;
+            } else if (this.icon == "Multi") {
+              payload.multilineMessage = this.messageModal;
+            } else if (this.icon == "Image") {
+              payload.multilineMessage = this.ImageFile;
+            } else if (this.icon == "Video") {
+              payload.multilineMessage = this.messageModal;
+            }
+            console.log(payload);
+          }
+      this.post_callColorLightApi(payload)
+      .then(data => {
+        this.SendApiLoader = false
+        this.ApiResponse = data.data
+        this.step++
+        console.log(data)
+      })
+      .catch(err =>{
+        console.log(err)
+        this.SendApiLoader = false
+      })
+    },
     sendData() {
       if (this.icon != 'Combine'){
         this.$refs.RegionDimension_ref.validateFun().then((data) => {
@@ -604,6 +684,8 @@ export default {
   },
   data() {
     return {
+      SendApiLoader: false,
+      ApiResponse: null,
       loadPreview: false,
       combinatioPreview: null,
       playlist: "Playlist 1",
