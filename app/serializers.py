@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse
 from rest_framework import serializers
 # from django.contrib.auth.models import User, Group
@@ -41,15 +43,21 @@ class ScheduleSerailizers(serializers.ModelSerializer):
 
 class PlaylistSerailizers(serializers.ModelSerializer):
     createdDateFormat = serializers.DateTimeField(source='CreatedDate', format="%Y-%m-%d %H:%M:%S", read_only=True)
+    CombineMessageData = serializers.SerializerMethodField(method_name='GetCombineMessageData', read_only=True)
 
+    def GetCombineMessageData(self, value):
+        try:
+           if(value.combineMessae):
+               return json.loads(value.combineMessae)
+           else:
+               return []
+        except Exception as e:
+            print("Exception in GetCombineMessageData", str(e))
+            return []
     class Meta:
         model = models.Playlist
         fields = "__all__"
 
-# class PublishManagementSerailizers(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.PublishManagement
-#         fields = "__all__"
 
 class TextMessageSerailizers(serializers.ModelSerializer):
 
@@ -118,6 +126,7 @@ class UsersSerailizers(serializers.ModelSerializer):
         user = models.CustomUser.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
+            role=validated_data['role'],
             first_name=validated_data.get('first_name', ' '),
             last_name=validated_data.get('last_name', ' ')
         )
@@ -141,3 +150,13 @@ class ReportsSerailizers(serializers.ModelSerializer):
         model = models.Reports
         fields = "__all__"
 
+class PublishManagementSerailizers(serializers.ModelSerializer):
+
+    createdDateFormat = serializers.DateTimeField(source='CreatedDate', format="%Y-%m-%d %H:%M:%S", read_only=True)
+    playlistData = PlaylistSerailizers(source='playlist', many=True, read_only=True)
+    vmd_list = VMDSSerailizers(source="vmd", many=True, read_only=True)
+    vmdGroups_list = VMDGroupsSerailizers(source="vmdGroups", many=True, read_only=True)
+
+    class Meta:
+        model = models.PublishManagement
+        fields = "__all__"

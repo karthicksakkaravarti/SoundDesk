@@ -108,7 +108,10 @@
               <a-dropdown-button @click="sendData" type="primary">
                 Send <v-icon color="primary">mdi-send-circle</v-icon>
                 <a-menu slot="overlay">
-                  <a-menu-item key="1" @click="SaveToPlaylist">
+                  <a-menu-item v-if="icon == 'Combine'" key="1" @click="SaveCombinationalMessage">
+                    Save to playlist
+                  </a-menu-item>
+                  <a-menu-item v-else key="1" @click="SaveToPlaylist">
                     Save to playlist
                   </a-menu-item>
                 </a-menu>
@@ -498,6 +501,51 @@ export default {
                   this.step++;
       }
       
+    },
+    SaveCombinationalMessage(){
+      console.log("Calles combination message funcation")
+      console.log(this.$refs.combinationActualPreviewRef)
+      if(this.$refs.combinationActualPreviewRef.panes.length >=1){
+        console.log("Message added")
+        var payload = {
+            playlistname: this.playlist,
+            XCoOrdinates: null,
+            YCoOrdinates: null,
+            Width: null,
+            Height: null,
+            BorderLine: null,
+            BackGroundColor: null,
+            type: this.icon,
+            singleLineMessage: "",
+            multilineMessage: "",
+            combineMessae: JSON.stringify(this.$refs.combinationActualPreviewRef.panes),
+            imageMessage: null,
+            videoMessage: null,
+            user: this.GetCurrentUser.id,
+          };
+          console.log(payload)
+          this.post_Playlist(payload)
+              .then((data) => {
+                this.$notification["success"]({
+                  message: "Playlist Saved Successfully",
+                });
+                this.overlayMain = false;
+
+                console.log(data);
+              })
+              .catch((err) => {
+                err;
+                this.overlayMain = false;
+                this.userError = err.response.data.Error;
+              });
+
+      }
+      else{
+        this.$notification["warn"]({
+            message: "Please add atleast one message to save as playlist",
+            // description: "Predefined Message Updated",
+          });
+      }
     },
     SaveToPlaylist() {
       this.overlayMain = true;

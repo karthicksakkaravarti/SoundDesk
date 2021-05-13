@@ -3,8 +3,41 @@
     <v-breadcrumbs :items="items"></v-breadcrumbs>
     <div v-once v-if="GetCurrentUser && GetCurrentUser.id">
       {{ LoadAllTestMessageData() }}
+            {{ LoadSequenceList() }}
+
     </div>
-    <v-card>
+
+    <a-tabs class="ma-2" default-active-key="1" >
+      <a-tab-pane key="1" tab="Schedule List">
+        <v-data-table
+        :items="AllSequenceMessage"
+        :headers="[
+        {text: '#Id', value: 'id'},
+        {text: 'Start Date', value: 'StartDate'},
+        {text: 'Endt Date', value: 'EndDate'},
+        {text: 'Start Time', value: 'StartTime'},
+        {text: 'End Time', value: 'EndTime'},
+        {text: 'Target VMD/Group', value: 'vmdlist'},
+        {text: 'Playlist', value: 'playlistData'},
+        {text: 'Acton', value: 'action'},
+        ]"
+        >
+<template v-slot:item.vmdlist="{ item }" >
+              <template v-if="item.vmd_list.length >=1">   <a-tag v-for="k in item.vmd_list" v-bind:key="k.id"><a :href="`/#/VmdInfo/${k.id}`">{{k.VMDName}}</a></a-tag></template>
+          <template v-if="item.vmdGroups_list.length >=1"> <a-tag v-for="k in item.vmdGroups_list" v-bind:key="k.id">{{k.GroupName}}</a-tag></template>
+    </template>
+    
+<template v-slot:item.playlistData="{ item }" >
+              <a :href="`/#/playlist?playlist=${item.playlistData[0].playlistname}`">{{item.playlistData[0].playlistname}}</a>
+    </template>
+<template v-slot:item.action="{ item }" >
+  <a-button @click="deleteRecord(item)">Delete</a-button>
+    </template>
+
+        </v-data-table>
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="Setup New Schedule" force-render>
+        <v-card>
       <v-card-text>
         <!-- VMD Selection -->
         <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
@@ -144,6 +177,11 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+      </a-tab-pane>
+      
+    </a-tabs>
+
+    
   </div>
 </template>
 
@@ -161,6 +199,23 @@ export default {
   },
   components: { ScheduleForm },
   methods: {
+    LoadSequenceList() {
+            this.AllSequenceMessage = []
+
+      this.get_PublishManagement("?ordering=-id&type=Schedule&user=" + this.GetCurrentUser.id).then((data) => {
+        if (data.data.length >= 1) {
+          this.AllSequenceMessage = data.data;
+        }
+      });
+    },
+    deleteRecord(payload){
+      this.delete_PublishManagement(payload)
+      this.$notification["success"]({
+            message: "Schedule Message Deleted successfully",
+            // description: "Predefined Message Updated",
+          });
+      this.LoadSequenceList()
+    },
     sendMesage() {
       this.$refs.sequenceModal.validate();
       this.$refs.ScheduleForm_ref.validateFun().then(() => {
@@ -169,6 +224,30 @@ export default {
           this.sequenceListMessage.length >= 1 &&
           this.vmd_or_Group.length >= 1
         ) {
+          var payload = {
+            "StartDate": this.$refs.ScheduleForm_ref.dataObj.StartDate,
+            "EndDate": this.$refs.ScheduleForm_ref.dataObj.EndDate,
+            "StartTime": this.$refs.ScheduleForm_ref.dataObj.StartTime,
+            "EndTime": this.$refs.ScheduleForm_ref.dataObj.EndTime,
+            "type": "Schedule",
+            "status": "Active",
+            "user": this.GetCurrentUser.id,
+            "vmd": [],
+            "vmdGroups": [],
+            "playlist": []
+        }
+        if (this.VmDSelectionValue == 'VMD'){payload.vmd = this.vmd_or_Group}
+        if (this.VmDSelectionValue == 'VMDGroup'){payload.vmdGroups = this.vmd_or_Group}
+        for (var i of this.sequenceListMessage){
+            payload.playlist.push(i.modal.id)
+        }
+                console.log(payload)
+
+        this.post_PublishManagement(payload)
+        .then(data => {
+          console.log(data)
+        })
+
           this.$notification["success"]({
             message: "Sequence Message Send successfully",
             // description: "Predefined Message Updated",
@@ -204,6 +283,7 @@ export default {
   data() {
     return {
       AllMessagesDataobj: [],
+      AllSequenceMessage: [],
       rules: {
         required: (value) => !!value || "Required.",
         counter: (value) => value.length <= 20 || "Max 20 characters",

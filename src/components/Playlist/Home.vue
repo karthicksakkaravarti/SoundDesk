@@ -14,6 +14,9 @@
       <div v-once v-if="GetCurrentUser && GetCurrentUser.id">
         {{ GetPlaylist() }}
       </div>
+      <div v-once v-if="GetCurrentUser && GetCurrentUser.id">
+        {{ getQueryData() }}
+      </div>
       <a-input-search
         style="width: 300px"
         class="ml-6"
@@ -26,26 +29,25 @@
       <a-timeline class="pt-5">
         <a-timeline-item v-bind:key="i.id" v-for="i in Playlist">
           Create at {{ i.createdDateFormat }} Playlist Name :
-          {{ i.playlistname }}
+          <b><v-chip>{{ i.playlistname }}</v-chip></b>
           <br />
           <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
             Message Type :
-            {{
-              ["Single", "Multi"].includes(i.type)
-                ? i.type + " Line Message"
-                : "Media Message"
-            }}
+            <template v-if="['Single', 'Multi'].includes(i.type)">{{i.type + " Line Message"}}</template>
+            <template v-else-if="['Image', 'Video'].includes(i.type)">{{i.type + " Media Message"}}</template>
+            <template v-else>{{i.type + " Message"}}</template>
+            
           </h3>
-          <a-collapse accordion>
+          <a-collapse accordion >
             <a-collapse-panel key="1" header="Message Detail">
               <v-card>
                 <v-card-text>
                   <v-window v-model="step">
                     <v-window-item :value="1">
-                      <h3 style="border-left: 5px solid #394a59" class="pl-3">
+                      <h3 v-if="i.type != 'Combine'" style="border-left: 5px solid #394a59" class="pl-3">
                         Region Dimension and Co-Ordinates
                       </h3>
-                      <v-row class="ml-2">
+                      <v-row v-if="i.type != 'Combine'" class="ml-2">
                         <v-col>
                           <v-text-field
                             readonly
@@ -79,7 +81,7 @@
                           ></v-text-field>
                         </v-col>
                       </v-row>
-                      <v-row class="ml-2">
+                      <v-row v-if="i.type != 'Combine'" class="ml-2">
                         <v-col>
                           <v-text-field
                             readonly
@@ -123,11 +125,14 @@
                         title="Iframe Example"
                       >
                       </iframe>
+                      
                       <img   v-else-if="i.type == 'Image'"  :src="i.imageMessage" alt="">
                       <video width="400" v-else-if="i.type == 'Video'" controls>
                         <source :src="i.videoMessage" type="video/mp4">
-                        Your browser does not support HTML video.
+                        Your browser does not support HTML video. 
                       </video>
+                      <CombinationalPreview v-else-if="i.type == 'Combine'"  :PreviewData="i.CombineMessageData" />
+
 
                       <!-- VMD Selection -->
                       <h3
@@ -217,6 +222,9 @@
               </v-card>
             </a-collapse-panel>
           </a-collapse>
+          <!-- <template v-else>
+            No Preview Available for Combine Message
+          </template> -->
         </a-timeline-item>
       </a-timeline>
     </div>
@@ -227,10 +235,11 @@
 import { MessagingMixins } from "../../mixins/MessagingMixins";
 import { UsersMixins } from "../../mixins/UsersMixins";
 import { VMDMixins } from "../../mixins/VMDMixins";
+import CombinationalPreview from "../Messaging/CombinationalPreview";
 
 export default {
   mixins: [MessagingMixins, UsersMixins, VMDMixins],
-  components: {},
+  components: {CombinationalPreview},
   data() {
     return {
       vmd_or_Group: [],
@@ -255,8 +264,16 @@ export default {
   mounted() {
     this.get_VMDS();
     this.get_VMDSGroups();
+
+    
   },
   methods: {
+    getQueryData(){
+      if(this.$route.query.playlist){
+      this.seachtext = this.$route.query.playlist
+      this.onSearch()
+    }
+    },
     onSearch() {
       console.log("Searched called");
       this.Searchlist();

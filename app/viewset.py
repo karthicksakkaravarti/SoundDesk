@@ -26,6 +26,10 @@ class DeveiceViewSet(viewsets.ModelViewSet):
 class VMDSViewSet(viewsets.ModelViewSet):
     queryset = models.VMDS.objects.all()
     serializer_class = serializers.VMDSSerailizers
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields = ['id']
+    filterset_fields = ['id']
+
 
 class ReportsViewSet(viewsets.ModelViewSet):
     queryset = models.Reports.objects.all()
@@ -36,9 +40,12 @@ class VMDConfigViewSet(viewsets.ModelViewSet):
     queryset = models.VMDConfig.objects.all()
     serializer_class = serializers.VMDConfigSerailizers
 #
-# class PublishManagementViewSet(viewsets.ModelViewSet):
-#     queryset = models.PublishManagement.objects.all()
-#     serializer_class = serializers.PublishManagementSerailizers
+class PublishManagementViewSet(viewsets.ModelViewSet):
+    queryset = models.PublishManagement.objects.all()
+    serializer_class = serializers.PublishManagementSerailizers
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields = ['id','type', 'user']
+    filterset_fields = ['id','type', 'user']
 class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = models.Playlist.objects.all()
     serializer_class = serializers.PlaylistSerailizers

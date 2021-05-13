@@ -33,7 +33,7 @@
                       v-model="userObj.role"
                       label="User Role"
                       auto-select-first
-                      :items="['Admin', 'User']"
+                      :items="['Supervisor', 'Officer', 'Operator']"
                     ></v-autocomplete>
                   </v-col>
 
@@ -141,8 +141,9 @@ export default {
     return {
       header: [
         { text: "#", value: "id" },
-        { text: "User Id", value: "email" },
-        { text: "Name", value: "username" },
+        { text: "Username", value: "username" },
+        { text: "User Email", value: "email" },
+        { text: "User Type", value: "role" },
         { text: "Action", value: "actions" },
       ],
       loading: false,

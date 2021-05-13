@@ -50,30 +50,18 @@
                           VMD Location : {{ feature.properties.i.VMDLocation }}
                         </li>
                         <li>
-                          VMD Latitude : {{ feature.properties.i.VMDLatitude }}
-                        </li>
-                        <li>
-                          VMD Longitude :
-                          {{ feature.properties.i.VMDLongitude }}
-                        </li>
-                        <li>
-                          VMD IPAddress :
+                          VMD IP Address :
                           {{ feature.properties.i.VMDIPAddress }}
-                        </li>
-                        <li>
-                          VMD Height:
-                          {{ feature.properties.i.VMDResolutionHeight }}
-                        </li>
-                        <li>
-                          VMD width :
-                          {{ feature.properties.i.VMDResolutionwidth }}
                         </li>
                         <li>
                           VMD Status: {{ feature.properties.i.VMDStatus }}
                         </li>
+                        <li>
+                          VMD Brightness: {{ feature.properties.i.VMDBrightness }}
+                        </li>
                       </ul>
                     </div>
-                  </div>
+                  </div>  
                 </v-card-text>
               </v-card>
             </section>

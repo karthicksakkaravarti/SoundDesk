@@ -359,6 +359,42 @@
           </ul>
         </div>
 
+        <a-select class="mb-3" size="small" default-value="lucy" v-model="family" style="width: 120px" @change="commands.font_family({font_family: family})" >
+          <a-select-option value="sans-serif	">
+            sans-serif		
+          </a-select-option>
+          <a-select-option value="Helvetica, sans-serif">
+            Helvetica, sans-serif	
+          </a-select-option>
+          <a-select-option value="Arial Narrow, sans-serif" >
+            Arial Narrow, sans-serif		
+          </a-select-option>
+          <a-select-option value="Trebuchet MS, sans-serif">
+            Trebuchet MS, sans-serif	
+          </a-select-option>
+        </a-select>
+        <!-- <div
+          ref="fontStylePicker"
+          class="font-style-picker-container"
+          style="width: 44px"
+        >
+          
+          <button
+            v-tooltip.bottom="'Font Style'"
+            aria-label="Font Style"
+            type="button"
+            class="menubar__button menubar__title"
+            style="position: relative; width: 44px"
+            :class="{
+              'is-active': isFontSizeActive(getMarkAttrs),
+            }"
+            @click="commands.font_family({font_family: 'Impact, sans-serif'})"
+          >
+            asd
+          </button>
+          
+        </div> -->
+
         <button
           v-if="!single"
           v-tooltip.bottom="'On the left'"
@@ -508,6 +544,7 @@ import { VTooltip } from "v-tooltip";
 // import { Editor, EditorMenuBar } from 'tiptap'
 import { Editor, EditorContent, EditorMenuBar } from "tiptap";
 import FontSize from "./FontSize";
+import FontStyle from "./FontStyle";
 import Color from "./Color";
 import ColorFill from "./ColorFill";
 
@@ -573,6 +610,7 @@ export default {
   },
   data() {
     return {
+      family: 'sans-serif',
       colorError: "",
       userColor: "",
       colorFill: false,
@@ -712,6 +750,7 @@ export default {
           new Color(),
           new ColorFill(),
           new HorizontalRule(),
+          new FontStyle(),
           new RestricNewLine(),
           new HardBreak(),
           new Heading({ levels: this.headingLevels }),

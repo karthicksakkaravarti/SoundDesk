@@ -234,6 +234,8 @@ export default {
           console.log("Called")
           pane.left = this.NewChange.left 
           pane.top = this.NewChange.top 
+          pane.width = this.NewChange.width 
+          pane.height = this.NewChange.height 
         }
       }
       this.NewChange =null

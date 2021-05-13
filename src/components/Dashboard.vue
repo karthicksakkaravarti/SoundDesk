@@ -132,6 +132,9 @@
                 item.VMDStatus
               }}</v-chip>
             </template>
+            <template v-slot:item.VMDName="{ item }" >
+              <a :href="`/#/VmdInfo/${item.id}`">{{item.VMDName}}</a>
+            </template>
            
           </v-data-table>
         </v-card>

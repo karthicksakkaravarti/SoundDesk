@@ -60,14 +60,14 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6">
+                <!-- <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="VMDObj.VMDPort"
                     :rules="[rules.required]"
                     label="VMD Port*"
                     required
                   ></v-text-field>
-                </v-col>
+                </v-col> -->
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="VMDObj.VMDResolutionHeight"
@@ -87,8 +87,7 @@
                 <v-col cols="12" sm="6">
                   <v-autocomplete
                     v-model="VMDObj.VMDStatus"
-                    :rules="[rules.required]"
-                    label="VMD Status*"
+                    label="VMD Status"
                     auto-select-first
                     :items="['Active',  'InActive']"
                   ></v-autocomplete>
@@ -110,7 +109,9 @@
                     v-model="VMDObj.AssigneUser"
                     label="Assigne User"
                     auto-select-first
-                    :items="['Active' ]"
+                    item-text="username"
+                    item-value="username"
+                    :items="UsersListActaul"
                   ></v-autocomplete>
                 </v-col>
               </v-row>
@@ -174,14 +175,16 @@
 
 <script>
 import { VMDMixins } from "../../mixins/VMDMixins";
+import { UsersMixins } from "../../mixins/UsersMixins";
 
 export default {
-  mixins: [VMDMixins],
+  mixins: [VMDMixins, UsersMixins],
   data() {
     return {
       header: [
         { text: "#", value: "id" },
         { text: "Name", value: "VMDName" },
+        { text: "Location", value: "VMDLocation" },
         { text: "Latitude", value: "VMDLatitude" },
         { text: "Longitude", value: "VMDLongitude" },
         { text: "IPAddress", value: "VMDIPAddress" },
@@ -192,6 +195,8 @@ export default {
       loading: false,
       userformloader: false,
       UsersList: [],
+      UsersListActaul: [],
+      
       dialogm1: "",
       dialog: false,
       formmodal: false,
@@ -230,6 +235,7 @@ export default {
   mounted() {
     console.log("Mounted called");
     this.getUsersList();
+    this.getUsers1List();
   },
   computed: {
     progress() {
@@ -263,6 +269,14 @@ export default {
         });
       });
       // this.userObj = item
+    },
+    getUsers1List() {
+      this.loading = true;
+      this.get_Users().then((data) => {
+        this.loading = false;
+        // this.UsersList = data.data.results;
+        this.UsersListActaul = data.data;
+      });
     },
     getUsersList() {
       this.loading = true;

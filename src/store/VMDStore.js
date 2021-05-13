@@ -21,6 +21,20 @@ const mutations = {
 
 
 const actions = {
+    get_VMDS_ByID({commit}, query){
+        commit
+        return new Promise((resolve, reject) => {
+            Axios.get('api/VMDS/'+query)
+            .then(data => {
+                commit('mutation__addVMD', data.data)
+
+                resolve(data)
+            })
+            .catch(err =>{
+                reject(err)
+            })
+        })
+    },
     get_VMDS({commit}){
         commit
         return new Promise((resolve, reject) => {

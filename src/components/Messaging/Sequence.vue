@@ -3,8 +3,147 @@
     <v-breadcrumbs :items="items"></v-breadcrumbs>
     <div v-once v-if="GetCurrentUser && GetCurrentUser.id">
       {{ LoadAllTestMessageData() }}
+      {{ LoadSequenceList() }}
     </div>
-    <v-card>
+     <a-tabs class="ma-2" default-active-key="1" >
+      <a-tab-pane key="1" tab="Sequence List">
+        <a-timeline>
+          <a-timeline-item v-for="j in AllSequenceMessage" v-bind:key="j.id">
+            Create at {{ j.createdDateFormat }}
+          <br />
+          
+          <template v-if="j.vmd_list.length >=1">  Target VMD : <a-tag v-for="k in j.vmd_list" v-bind:key="k.id"><a :href="`/#/VmdInfo/${k.id}`">{{k.VMDName}}</a></a-tag></template>
+          <template v-if="j.vmdGroups_list.length >=1">Target VMD Group: <a-tag v-for="k in j.vmdGroups_list" v-bind:key="k.id">{{k.GroupName}}</a-tag></template>
+          <a-timeline-item class="mt-2" v-bind:key="i.id" v-for="i in j.playlistData">
+           Playlist Name :
+          <b><v-chip>{{ i.playlistname }}</v-chip></b>
+          <br />
+          <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
+            Message Type :
+            {{
+              ["Single", "Multi"].includes(i.type)
+                ? i.type + " Line Message"
+                : "Media Message"
+            }}
+          </h3>
+          <a-collapse accordion>
+            <a-collapse-panel key="1" header="Message Detail">
+              <v-card>
+                <v-card-text>
+                  <v-window >
+                    <v-window-item :value="1">
+                      <h3 style="border-left: 5px solid #394a59" class="pl-3">
+                        Region Dimension and Co-Ordinates
+                      </h3>
+                      <v-row class="ml-2">
+                        <v-col>
+                          <v-text-field
+                            readonly
+                            v-model="i.XCoOrdinates"
+                            dense
+                            label="X Co-Ordinates "
+                          ></v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                            readonly
+                            v-model="i.YCoOrdinates"
+                            dense
+                            label="Y Co-Ordinates "
+                          ></v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                            readonly
+                            v-model="i.Width"
+                            dense
+                            label="Width "
+                          ></v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                            readonly
+                            v-model="i.Height"
+                            dense
+                            label="Height "
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row class="ml-2">
+                        <v-col>
+                          <v-text-field
+                            readonly
+                            v-model="i.BorderLine"
+                            dense
+                            label="Border Line "
+                          ></v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                            readonly
+                            v-model="i.BorderLine"
+                            dense
+                            label="Back Ground Color "
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <h3
+                        style="border-left: 5px solid #394a59"
+                        class="mt-3 pl-3"
+                      >
+                        Message Preview
+                      </h3>
+                      <iframe
+                        v-if="i.type == 'Single'"
+                        class="ml-2"
+                        :style="`background-color:${i.BackGroundColor};border: 4px solid ${i.BorderLine}`"
+                        :srcdoc="i.singleLineMessage"
+                        :height="i.Height"
+                        :width="i.Width"
+                        title="Iframe Example"
+                      >
+                      </iframe>
+                      <iframe
+                        v-else-if="i.type == 'Multi'"
+                        class="ml-2"
+                        :style="`background-color:${i.BackGroundColor};border: 4px solid ${i.BorderLine}`"
+                        :srcdoc="i.multilineMessage"
+                        :height="i.Height"
+                        :width="i.Width"
+                        title="Iframe Example"
+                      >
+                      </iframe>
+                      <img   v-else-if="i.type == 'Image'"  :src="i.imageMessage" alt="">
+                      <video width="400" v-else-if="i.type == 'Video'" controls>
+                        <source :src="i.videoMessage" type="video/mp4">
+                        Your browser does not support HTML video.
+                      </video>
+
+                      
+                    </v-window-item>
+                    <v-window-item :value="2">
+          <a-result status="success" title="Successfully Message Send to VMD">
+            <template #extra>
+              
+              <!-- <a-button key="buy">
+                Buy Again
+              </a-button> -->
+            </template>
+          </a-result>
+        </v-window-item>
+
+                  </v-window>
+                </v-card-text>
+                
+              </v-card>
+            </a-collapse-panel>
+          </a-collapse>
+          </a-timeline-item>
+          </a-timeline-item>
+        </a-timeline>
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="New Sequence Message" force-render>
+        <v-card>
       <v-card-text>
         <!-- VMD Selection -->
         <h3 style="border-left: 5px solid #394a59" class="mt-3 pl-3">
@@ -140,6 +279,11 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+      </a-tab-pane>
+
+    </a-tabs>
+
+    
   </div>
 </template>
 
@@ -160,6 +304,29 @@ export default {
         this.sequenceListMessage.length >= 1 &&
         this.vmd_or_Group.length >= 1
       ) {
+        var payload = {
+            "StartDate": null,
+            "StartTime": null,
+            "Duration": "",
+            "RepeatCount": null,
+            "type": "Sequence",
+            "status": "Active",
+            "user": this.GetCurrentUser.id,
+            "vmd": [],
+            "vmdGroups": [],
+            "playlist": []
+        }
+        if (this.VmDSelectionValue == 'VMD'){payload.vmd = this.vmd_or_Group}
+        if (this.VmDSelectionValue == 'VMDGroup'){payload.vmdGroups = this.vmd_or_Group}
+        for (var i of this.sequenceListMessage){
+            payload.playlist.push(i.modal.id)
+        }
+                console.log(payload)
+
+        this.post_PublishManagement(payload)
+        .then(data => {
+          console.log(data)
+        })
         this.$notification["success"]({
           message: "Sequence Message Send successfully",
           // description: "Predefined Message Updated",
@@ -190,10 +357,18 @@ export default {
         }
       });
     },
+    LoadSequenceList() {
+      this.get_PublishManagement("?ordering=-id&type=Sequence&user=" + this.GetCurrentUser.id).then((data) => {
+        if (data.data.length >= 1) {
+          this.AllSequenceMessage = data.data;
+        }
+      });
+    },
   },
   data() {
     return {
       AllMessagesDataobj: [],
+      AllSequenceMessage: [],
       rules: {
         required: (value) => !!value || "Required.",
         counter: (value) => value.length <= 20 || "Max 20 characters",
