@@ -18,7 +18,7 @@ const routes = [
                 {
                 path: '/Devices',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/Devices.vue'),
-                meta: { title: 'DashBoard' }
+                meta: { title: 'Devices' }
                 },
                 {
                 path: '/Usermanagement',
@@ -33,7 +33,7 @@ const routes = [
                 {
                 path: '/GoogleMap',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/GoogleMap.vue'),
-                meta: { title: 'VmdManagement' }
+                meta: { title: 'GoogleMap' }
                 },
                 {
                 path: '/Predefined',
@@ -43,7 +43,7 @@ const routes = [
                 {
                 path: '/VmdInfo/:id',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/VMD_Management/VMD_Info.vue'),
-                meta: { title: 'Predefined Messages' }
+                meta: { title: 'VmdInfo' }
                 },
                 {
                 path: '/Sequence',
@@ -58,7 +58,7 @@ const routes = [
                 {
                 path: '/Schedule',
                 component: () => import(/* webpackChunkName: "demo" */ '../components/Messaging/Schedule.vue'),
-                meta: { title: 'Sequence Messages' }
+                meta: { title: 'Schedule Messages' }
                 },
                 {
                 path: '/VmdConfiguration',

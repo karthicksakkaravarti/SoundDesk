@@ -295,7 +295,7 @@
           </svg>
         </button>
 
-        <button
+        <!-- <button
           v-tooltip.bottom="'Level 1 heading'"
           aria-label="Level 1 heading"
           type="button"
@@ -324,7 +324,7 @@
           @click="commands.heading({ level: 3 })"
         >
           <span class="button-title">H3</span>
-        </button>
+        </button> -->
 
         <div
           ref="fontSiziePicker"
@@ -359,6 +359,10 @@
           </ul>
         </div>
 
+        <div
+          class="font-size-picker-container"
+          style="width: 44px"
+        >
         <a-select class="mb-3" size="small" default-value="lucy" v-model="family" style="width: 120px" @change="commands.font_family({font_family: family})" >
           <a-select-option value="sans-serif	">
             sans-serif		
@@ -373,6 +377,9 @@
             Trebuchet MS, sans-serif	
           </a-select-option>
         </a-select>
+        </div>
+        
+        
         <!-- <div
           ref="fontStylePicker"
           class="font-style-picker-container"
@@ -606,6 +613,7 @@ export default {
     },
     single: {
       required: false,
+      default: false
     },
   },
   data() {
@@ -629,7 +637,7 @@ export default {
       return [1, 2, 3];
     },
     fontsizes() {
-      const fontsizes = [12, 14, 16, 18, 20, 24];
+      const fontsizes = [12, 14, 16, 18, 20, 24, 26,28];
       return fontsizes;
     },
     colors() {
@@ -876,7 +884,8 @@ export default {
     },
 
     findStoredFontSize() {
-      const storedMark = (this.state.storedMarks || []).find(
+      try{
+        const storedMark = (this.state.storedMarks || []).find(
         (mark) => mark.attrs.size
       );
       if (storedMark) {
@@ -890,6 +899,8 @@ export default {
           return prevMark.attrs.size;
         }
       }
+      }
+      catch(err){err}
     },
 
     activeFontSize(getMarkAttrs) {

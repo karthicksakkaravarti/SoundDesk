@@ -35,7 +35,10 @@ def ColorLightAPIFun(request):
     print(request.data)
     try:
         cl_obj = ColorLightAPI.ColorLightAPI()
-        response = cl_obj.singleLineMessage(request.data)
+        if (request.data.get('type', None) == 'Image'):
+            response = cl_obj.ImageMessage(request.data)
+        else:
+            response = cl_obj.Message(request.data)
         return Response(response)
     except Exception as e:
         print("exception in ColorLightAPI", str(e))

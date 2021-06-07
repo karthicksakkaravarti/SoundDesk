@@ -142,17 +142,18 @@
                       :image-provider="imageProvider"
                       disableimage="true"
                       disablevideo="true"
-                      v-model="messageModal"
+                      v-model="SingleLinemessageModal"
                     />
 
                     <!-- <v-text-field label="Single Line Message" v-model="messageModal"></v-text-field> -->
                   </template>
                   <template v-if="icon == 'Multi'">
-                    <Editor
+                    <MultiEditor
+                      :single="true"
                       :image-provider="imageProvider"
                       disableimage="true"
                       disablevideo="true"
-                      v-model="messageModal"
+                      v-model="MultiLinemessageModal"
                     />
                   </template>
                   <template v-if="icon == 'Image'">
@@ -193,8 +194,18 @@
                   </div>
                   <center v-else>
                     <iframe
+                      v-if="icon == 'Single'"
                       :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
-                      :srcdoc="messageModal"
+                      :srcdoc="SingleLinemessageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
+                    <iframe
+                      v-if="icon == 'Multi'"
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="MultiLinemessageModal"
                       :height="$refs.RegionDimension_ref.dataObj.Height"
                       :width="$refs.RegionDimension_ref.dataObj.Width"
                       title="Iframe Example"
@@ -209,13 +220,23 @@
                       <v-row>
                         <v-col>
                           <iframe
-                            :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
-                            :srcdoc="messageModal"
-                            :height="$refs.RegionDimension_ref.dataObj.Height"
-                            :width="$refs.RegionDimension_ref.dataObj.Width"
-                            title="Iframe Example"
-                          >
-                          </iframe>
+                      v-if="icon == 'Single'"
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="SingleLinemessageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
+                    <iframe
+                      v-if="icon == 'Multi'"
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="MultiLinemessageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
                         </v-col>
                       </v-row>
                       <v-row
@@ -249,22 +270,42 @@
               <center>No Preview Avaialble for Video</center>
             </div>
             <center v-else>
-              <iframe
-                :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
-                :srcdoc="messageModal"
-                :height="$refs.RegionDimension_ref.dataObj.Height"
-                :width="$refs.RegionDimension_ref.dataObj.Width"
-                title="Iframe Example"
-              >
-              </iframe>
+               <iframe
+                      v-if="icon == 'Single'"
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="SingleLinemessageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
+                    <iframe
+                      v-if="icon == 'Multi'"
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="MultiLinemessageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
               <br />
 
               <v-overlay :value="overlay">
                 <v-row>
                   <v-col>
                     <iframe
+                      v-if="icon == 'Single'"
                       :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
-                      :srcdoc="messageModal"
+                      :srcdoc="SingleLinemessageModal"
+                      :height="$refs.RegionDimension_ref.dataObj.Height"
+                      :width="$refs.RegionDimension_ref.dataObj.Width"
+                      title="Iframe Example"
+                    >
+                    </iframe>
+                    <iframe
+                      v-if="icon == 'Multi'"
+                      :style="`background-color:${$refs.RegionDimension_ref.dataObj.BackGroundColor};border: 4px solid ${$refs.RegionDimension_ref.dataObj.BorderLine}`"
+                      :srcdoc="MultiLinemessageModal"
                       :height="$refs.RegionDimension_ref.dataObj.Height"
                       :width="$refs.RegionDimension_ref.dataObj.Width"
                       title="Iframe Example"
@@ -401,6 +442,7 @@ import { UsersMixins } from "../../mixins/UsersMixins";
 // import VueDragResize from "vue-drag-resize";
 
 import Editor from "@/index.js";
+import MultiEditor from "../MutiLineEditor.vue";
 // import Moveable from "vue-moveable";
 
 import RegionDimension from "./RegionDimension";
@@ -411,6 +453,7 @@ export default {
   components: {
     RegionDimension,
     Editor,
+    MultiEditor,
     Combinational,
     // VueDragResize,
     CombinationalPreview
@@ -421,7 +464,8 @@ export default {
     this.get_VMDS();
     this.get_VMDSGroups();
     this.load = true;
-    this.messageModal = " ";
+    this.SingleLinemessageModal = " ";
+    this.MultiLinemessageModal = " ";
   },
   methods: {
     SendMessageToVMD(){
@@ -445,23 +489,25 @@ export default {
             vmd_or_Group: this.vmd_or_Group,
             VmDSelectionValue: this.VmDSelectionValue
           };
-        if (
-            ["Single", "Multi"].includes(this.icon) &&
-            this.messageModal.length >= 2
-          ) {
+
             console.log("Validation Done");
 
             if (this.icon == "Single") {
-              payload.singleLineMessage = this.messageModal;
+              payload.singleLineMessage = this.SingleLinemessageModal;
             } else if (this.icon == "Multi") {
-              payload.multilineMessage = this.messageModal;
+              payload.multilineMessage = this.MultiLinemessageModal;
             } else if (this.icon == "Image") {
-              payload.multilineMessage = this.ImageFile;
+              let formData = new FormData();
+              if (this.icon == "Image") {
+                formData.append("imageMessage", this.ImageFile);
+              } else if (this.icon == "Video") {
+                formData.append("videoMessage", this.VideoModal);
+              }
+              payload["formData"] = formData
             } else if (this.icon == "Video") {
-              payload.multilineMessage = this.messageModal;
+              payload.videoMessage = this.messageModal;
             }
             console.log(payload);
-          }
       this.post_callColorLightApi(payload)
       .then(data => {
         this.SendApiLoader = false
@@ -480,12 +526,23 @@ export default {
         console.log(this.messageModal.length);
         if (
           data &&
-          ["Single", "Multi"].includes(this.icon) &&
-          this.messageModal.length >= 2
-        ) {
+          this.icon == "Single" &&
+          this.SingleLinemessageModal.length >= 2
+        ) 
+        {
           console.log("Validation Done");
           this.step++;
-        } else if (data && this.previewImage && this.icon == "Image") {
+        } 
+        else if (
+          data &&
+          this.icon == "Multi" &&
+          this.MultiLinemessageModal.length >= 2
+        ) 
+        {
+          console.log("Validation Done");
+          this.step++;
+        } 
+        else if (data && this.previewImage && this.icon == "Image") {
           this.step++;
         } else {
           console.log("Please fill all the fields");
@@ -571,14 +628,14 @@ export default {
           if (
             data &&
             ["Single", "Multi"].includes(this.icon) &&
-            this.messageModal.length >= 2
+            this.SingleLinemessageModal.length >= 2
           ) {
             console.log("Validation Done");
 
             if (this.icon == "Single") {
-              payload.singleLineMessage = this.messageModal;
+              payload.singleLineMessage = this.SingleLinemessageModal;
             } else if (this.icon == "Multi") {
-              payload.multilineMessage = this.messageModal;
+              payload.multilineMessage = this.MultiLinemessageModal;
             } else if (this.icon == "Image") {
               payload.multilineMessage = this.ImageFile;
             } else if (this.icon == "Video") {
@@ -774,6 +831,8 @@ export default {
         },
       },
       messageModal: "",
+      SingleLinemessageModal: "",
+      MultiLinemessageModal: "",
       load: false,
       items: [
         {
